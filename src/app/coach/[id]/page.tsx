@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { squad } from "@/data/squad";
-import { fitScore } from "@/engine";
+import { buildXI, fiveAxisFit } from "@/engine";
 import { allCoaches, getCoach, getSim, baselineCoach, baselineSim } from "@/lib/sims";
-import { TIER_LABEL, fitTone, ROUND_LABEL, SUB_LABEL } from "@/lib/format";
+import { TIER_LABEL, fitTone, ROUND_LABEL } from "@/lib/format";
 import type { StyleAxes } from "@/data/types";
 import Pitch from "@/components/Pitch";
 import Radar from "@/components/Radar";
+import FiveAxes from "@/components/FiveAxes";
 import KeyPlayers from "@/components/KeyPlayers";
 import SaPanel from "@/components/SaPanel";
 import WcReachBar from "@/components/WcReachBar";
@@ -26,12 +27,14 @@ const AXES: { key: keyof StyleAxes; lo: string; hi: string }[] = [
   { key: "buildFromBack", lo: "롱볼", hi: "후방빌드업" },
 ];
 
-const Card = ({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) => (
-  <div className={`rounded-2xl border border-border bg-surface/80 p-5 ${className}`}>
-    <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-accent">{title}</h2>
-    {children}
-  </div>
-);
+function Card({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
+  return (
+    <div className={`rounded-2xl border border-line bg-surface/80 p-5 ${className}`}>
+      <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent">{title}</h2>
+      {children}
+    </div>
+  );
+}
 
 export default async function CoachPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
@@ -40,7 +43,8 @@ export default async function CoachPage({ params }: { params: Promise<{ id: stri
   if (!coach || !sim) notFound();
 
   const isBaseline = coach.id === baselineCoach.id;
-  const fit = fitScore(coach, squad);
+  const xi = buildXI(coach, squad);
+  const fit = fiveAxisFit(coach, squad, new Set(xi.xi.map((s) => s.player.id)));
   const tone = fitTone(sim.fitScore);
   const fitDelta = sim.fitScore - baselineSim.fitScore;
 
@@ -50,57 +54,53 @@ export default async function CoachPage({ params }: { params: Promise<{ id: stri
 
       {/* Header */}
       <Reveal immediate>
-        <div className="mt-4 flex flex-col gap-5 rounded-3xl border border-border bg-surface/80 p-6 sm:flex-row sm:items-center">
-          <div className="flex-1">
-            <span className="text-xs font-medium text-muted">{TIER_LABEL[coach.tier]} · {coach.status}</span>
-            <h1 className="mt-1 text-4xl font-black tracking-tight">{coach.name}</h1>
-            <p className="font-mono text-sm text-muted">{coach.nameEn} · {coach.formation}</p>
-            <div className="mt-3 flex flex-wrap gap-1.5">
-              {coach.dna.map((d) => (
-                <span key={d} className="rounded-full border border-border bg-background/60 px-2.5 py-1 text-xs text-foreground">{d}</span>
-              ))}
-            </div>
-          </div>
-          <div className="flex items-center gap-5">
-            <div className="text-center">
-              <div className="font-mono text-6xl font-black" style={{ color: tone }}>
-                <CountUp to={sim.fitScore} />
+        <div className="mt-4 overflow-hidden rounded-3xl border border-line bg-surface/80">
+          <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center">
+            <div className="flex-1">
+              <span className="text-xs font-bold uppercase tracking-[0.15em] text-muted">{TIER_LABEL[coach.tier]}</span>
+              <h1 className="headline mt-1 text-5xl">{coach.name}</h1>
+              <p className="mt-1 font-mono text-sm text-muted">{coach.nameEn} · {coach.formation} · {coach.status}</p>
+              {coach.rumor && <p className="mt-2 max-w-lg text-xs italic text-muted">&ldquo;{coach.rumor}&rdquo;</p>}
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                {coach.dna.map((d) => <span key={d} className="rounded-full border border-line bg-background/60 px-2.5 py-1 text-xs">{d}</span>)}
               </div>
-              <div className="text-[11px] text-muted">스쿼드 적합도</div>
-              {!isBaseline && (
-                <div className="mt-1 text-xs font-bold" style={{ color: fitDelta >= 0 ? "var(--good)" : "var(--bad)" }}>
-                  홍명보 대비 {fitDelta >= 0 ? "+" : ""}{fitDelta}
-                </div>
-              )}
+            </div>
+            <div className="text-center">
+              <div className="font-display text-7xl" style={{ color: tone }}><CountUp to={sim.fitScore} /></div>
+              <div className="text-[11px] text-muted">스쿼드 적합도 / 100</div>
+              {!isBaseline && <div className="mt-1 text-xs font-bold" style={{ color: fitDelta >= 0 ? "var(--good)" : "var(--bad)" }}>홍명보 대비 {fitDelta >= 0 ? "+" : ""}{fitDelta}</div>}
             </div>
           </div>
         </div>
       </Reveal>
 
-      {/* Narrative */}
       <Reveal immediate delay={0.05}>
-        <p className="mt-5 rounded-2xl border border-border bg-surface/50 p-5 leading-relaxed text-foreground">
-          {sim.explanation}
-        </p>
+        <p className="mt-5 rounded-2xl border border-line bg-surface/50 p-5 leading-relaxed">{sim.explanation}</p>
       </Reveal>
 
-      {/* Pitch + identity */}
+      {/* 5-axis + pitch */}
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
         <Reveal>
+          <Card title="적합도 5축 분해 (왜 이 점수인가)">
+            <FiveAxes axes={sim.axes} />
+            <p className="mt-4 text-[11px] text-muted">핵심 선수 30 · 전술 수행 25 · 약점 보완 20 · 단기전 15 · 현실성 10 — 모델 추정</p>
+          </Card>
+        </Reveal>
+        <Reveal delay={0.05}>
           <Card title={`예상 베스트 11 · ${sim.formation}`}>
             <Pitch formation={sim.formation} xi={sim.xi} />
           </Card>
         </Reveal>
+      </div>
 
-        <Reveal delay={0.05}>
+      {/* style + xG, radar + exec */}
+      <div className="mt-5 grid gap-5 lg:grid-cols-2">
+        <Reveal>
           <Card title="어떤 축구를 하나 (스타일)">
             <div className="space-y-3">
               {AXES.map((a) => (
                 <div key={a.key}>
-                  <div className="mb-1 flex justify-between text-[11px] text-muted">
-                    <span>{a.lo}</span>
-                    <span>{a.hi}</span>
-                  </div>
+                  <div className="mb-1 flex justify-between text-[11px] text-muted"><span>{a.lo}</span><span>{a.hi}</span></div>
                   <div className="relative h-2 rounded-full bg-background">
                     <div className="absolute inset-y-0 left-0 rounded-full bg-kr-blue/40" style={{ width: `${coach.axes[a.key]}%` }} />
                     <div className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-accent" style={{ left: `${coach.axes[a.key]}%` }} />
@@ -109,92 +109,57 @@ export default async function CoachPage({ params }: { params: Promise<{ id: stri
               ))}
             </div>
             <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-border bg-background/40 p-3 text-center">
-                <div className="font-mono text-2xl font-bold text-good">{sim.predictedXg.for}</div>
+              <div className="rounded-xl border border-line bg-background/40 p-3 text-center">
+                <div className="font-display text-2xl text-good">{sim.predictedXg.for}</div>
                 <div className="text-[11px] text-muted">예상 득점 xG</div>
               </div>
-              <div className="rounded-xl border border-border bg-background/40 p-3 text-center">
-                <div className="font-mono text-2xl font-bold text-bad">{sim.predictedXg.against}</div>
+              <div className="rounded-xl border border-line bg-background/40 p-3 text-center">
+                <div className="font-display text-2xl text-bad">{sim.predictedXg.against}</div>
                 <div className="text-[11px] text-muted">예상 실점 xG</div>
               </div>
             </div>
           </Card>
         </Reveal>
-      </div>
-
-      {/* Radar + requirement breakdown */}
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <Reveal>
-          <Card title="팀 색깔 (홍명보와 비교)">
-            <div className="flex justify-center">
-              <Radar sub={sim.subScores} baseline={isBaseline ? undefined : baselineSim.subScores} color={tone} />
-            </div>
-            <div className="mt-2 grid grid-cols-3 gap-2 text-center text-[11px]">
-              {(Object.keys(SUB_LABEL) as (keyof typeof SUB_LABEL)[]).map((k) => (
-                <div key={k} className="rounded-lg bg-background/40 py-1.5">
-                  <div className="font-mono text-base font-bold text-foreground">{sim.subScores[k]}</div>
-                  <div className="text-muted">{SUB_LABEL[k]}</div>
-                </div>
-              ))}
-            </div>
-          </Card>
-        </Reveal>
-
         <Reveal delay={0.05}>
-          <Card title="왜 이 점수인가 (요구 매칭 분해)">
-            <div className="space-y-2.5">
-              {fit.breakdown.map((r) => (
-                <div key={r.key}>
-                  <div className="flex justify-between text-xs">
-                    <span className="text-foreground">{r.label}</span>
-                    <span className="font-mono text-muted">충족 {r.supply} · 비중 {Math.round(r.weight * 100)}%</span>
+          <Card title="팀 색깔 (홍명보와 비교)">
+            <div className="flex justify-center"><Radar style={sim.teamStyle} baseline={isBaseline ? undefined : baselineSim.teamStyle} color={tone} /></div>
+            <div className="mt-3 border-t border-line pt-3">
+              <div className="mb-2 text-[11px] font-bold text-muted">전술 수행 — 요구 충족</div>
+              <div className="space-y-1.5">
+                {fit.breakdown.map((r) => (
+                  <div key={r.key} className="flex items-center gap-2 text-xs">
+                    <span className="w-28 shrink-0 truncate text-foreground">{r.label}</span>
+                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-background"><div className="h-full rounded-full" style={{ width: `${r.supply}%`, background: fitTone(r.supply) }} /></div>
+                    <span className="w-6 text-right font-mono text-muted">{r.supply}</span>
                   </div>
-                  <div className="mt-1 h-2 overflow-hidden rounded-full bg-background">
-                    <div className="h-full rounded-full" style={{ width: `${r.supply}%`, background: fitTone(r.supply) }} />
-                  </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-            <p className="mt-4 text-[11px] text-muted">
-              적합도 = 요구별 충족도의 가중 평균 × 스타일 보정({Math.round(fit.styleMult * 100)}%). 스타일이 스쿼드와 어긋나면 보정이 깎입니다.
-            </p>
           </Card>
         </Reveal>
       </div>
 
       {/* Key players */}
       <Reveal>
-        <div className="mt-5">
-          <Card title="손흥민 · 이강인 · 김민재는 사는가 죽는가">
-            <KeyPlayers verdicts={sim.keyVerdicts} />
-          </Card>
-        </div>
+        <div className="mt-5"><Card title="손흥민 · 이강인 · 김민재는 사는가 죽는가"><KeyPlayers verdicts={sim.keyVerdicts} /></Card></div>
       </Reveal>
 
       {/* SA + WC */}
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <Reveal>
-          <Card title="남아공전 반사실">
-            <SaPanel resolution={sim.saResolution} counterfactual={sim.saCounterfactual} />
-          </Card>
-        </Reveal>
+        <Reveal><Card title="남아공전 반사실"><SaPanel resolution={sim.saResolution} counterfactual={sim.saCounterfactual} /></Card></Reveal>
         <Reveal delay={0.05}>
           <Card title="월드컵 예상도 — 몇 강까지?">
             <WcReachBar reach={sim.wcReach} />
-            <div className="mt-4 rounded-xl border border-border bg-background/40 p-3 text-sm">
-              <span className="text-muted">홍명보 예상: </span>
-              <span className="font-bold">{ROUND_LABEL[baselineSim.wcReach.expected]}</span>
-              <span className="text-muted"> → {coach.name}: </span>
-              <span className="font-bold" style={{ color: tone }}>{ROUND_LABEL[sim.wcReach.expected]}</span>
+            <div className="mt-4 rounded-xl border border-line bg-background/40 p-3 text-sm">
+              <span className="text-muted">홍명보 예상: </span><span className="font-bold">{ROUND_LABEL[baselineSim.wcReach.expected]}</span>
+              <span className="text-muted"> → {coach.name}: </span><span className="font-bold" style={{ color: tone }}>{ROUND_LABEL[sim.wcReach.expected]}</span>
             </div>
           </Card>
         </Reveal>
       </div>
 
       <p className="mt-8 text-center text-xs text-muted">
-        출처: {coach.sources.map((s, i) => (
-          <a key={i} href={s} target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">[{i + 1}]</a>
-        ))} · 능력치·전술은 주관 추정, 수치는 모델 추정입니다.
+        출처: {coach.sources.map((s, i) => <a key={i} href={s} target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">[{i + 1}]</a>)} · 능력치·전술은 주관 추정, 수치는 모델 추정입니다.
       </p>
     </main>
   );

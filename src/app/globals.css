@@ -1,21 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  /* Broadcast-dark base */
-  --background: #06080f;
-  --surface: #0d111c;
-  --surface-2: #131a2a;
-  --foreground: #e8ecf5;
-  --muted: #8a93a8;
-  --border: #1e2740;
+  /* Broadcast-editorial dark base */
+  --background: #080a10;
+  --surface: #0e1119;
+  --surface-2: #161b27;
+  --foreground: #eef1f7;
+  --muted: #888fa3;
+  --line: #20283a;        /* crisp panel borders / chalk lines */
 
-  /* Brand accents */
-  --kr-red: #e4002b;     /* Taegeuk red */
-  --kr-blue: #2f5bff;    /* electric data blue */
-  --accent: #00e0c6;     /* cyan highlight for metrics */
+  --kr-red: #e4002b;      /* Taegeuk red */
+  --kr-blue: #2f6bff;
+  --accent: #19e3b1;      /* electric mint metric */
   --warn: #ffb020;
   --good: #2ee6a6;
-  --bad: #ff5470;
+  --bad: #ff4d6d;
 }
 
 @theme inline {
@@ -24,7 +23,8 @@
   --color-surface-2: var(--surface-2);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
-  --color-border: var(--border);
+  --color-line: var(--line);
+  --color-border: var(--line);
   --color-kr-red: var(--kr-red);
   --color-kr-blue: var(--kr-blue);
   --color-accent: var(--accent);
@@ -32,14 +32,11 @@
   --color-good: var(--good);
   --color-bad: var(--bad);
   --font-sans: var(--font-noto-kr);
-  --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
 }
 
-html {
-  background: var(--background);
-  color-scheme: dark;
-}
-
+html { background: var(--background); color-scheme: dark; }
 body {
   background: var(--background);
   color: var(--foreground);
@@ -47,29 +44,35 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Ferrofluid blobs */
-.ferro-blob {
-  transform-box: fill-box;
-  transform-origin: center;
-  animation-name: ferro-drift;
-  animation-timing-function: ease-in-out;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-}
-@keyframes ferro-drift {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(8px, -6px) scale(1.18); }
-  100% { transform: translate(-6px, 7px) scale(0.9); }
+.font-display { font-family: var(--font-display), var(--font-noto-kr), sans-serif; letter-spacing: -0.01em; }
+
+/* Editorial display headline: tight, poster-weight */
+.headline {
+  font-family: var(--font-display), sans-serif;
+  line-height: 0.92;
+  letter-spacing: -0.02em;
 }
 
-/* scrollbar + selection polish */
-::selection { background: color-mix(in srgb, var(--accent) 35%, transparent); }
+/* chalk/blueprint hairline grid used on panels */
+.chalk-grid {
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: 0.5;
+}
+
+.arena-beam { animation: beam-pan 16s ease-in-out infinite alternate; }
+@keyframes beam-pan {
+  0% { transform: translate3d(-4%, 0, 0) rotate(-8deg); opacity: 0.55; }
+  100% { transform: translate3d(6%, 2%, 0) rotate(-4deg); opacity: 0.8; }
+}
+
+::selection { background: color-mix(in srgb, var(--accent) 35%, transparent); color: #04130e; }
 
 @media (prefers-reduced-motion: reduce) {
-  .ferro-blob { animation: none !important; }
-  *,
-  *::before,
-  *::after {
+  .arena-beam { animation: none !important; }
+  *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.001ms !important;

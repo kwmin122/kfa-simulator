@@ -30,7 +30,17 @@ export default function CircularGallery({ items }: { items: GalleryItem[] }) {
         className="relative h-[300px] w-full max-w-4xl"
         style={{ perspective: "1200px" }}
       >
-        <div className="absolute inset-0" style={{ transformStyle: "preserve-3d" }}>
+        <motion.div
+          className="absolute inset-0 cursor-grab active:cursor-grabbing"
+          style={{ transformStyle: "preserve-3d" }}
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.18}
+          onDragEnd={(_, info) => {
+            if (info.offset.x < -60 || info.velocity.x < -350) go(1);
+            else if (info.offset.x > 60 || info.velocity.x > 350) go(-1);
+          }}
+        >
           {items.map((it, i) => {
             let offset = i - index;
             if (offset > n / 2) offset -= n;
@@ -102,7 +112,7 @@ export default function CircularGallery({ items }: { items: GalleryItem[] }) {
               </motion.button>
             );
           })}
-        </div>
+        </motion.div>
       </div>
 
       <div className="mt-6 flex items-center gap-4">

@@ -1,15 +1,14 @@
 import type { Attributes, Player, Position, StyleAxes } from "@/data/types";
 
 // ──────────────────────────────────────────────────────────────────────────
-// The discrimination core. A player's value for a slot depends on the SYSTEM,
-// not just raw quality — same squad, different coach → different XI. All linear
-// weighted sums so the UI can explain "why" and weights stay tunable.
+// Slot scoring over the 8 tactic-matched categories. Style weighting is
+// MULTIPLICATIVE so a strong system sharply re-ranks who fits. Linear sums →
+// explainable. Same player is worth different amounts to different coaches.
 // ──────────────────────────────────────────────────────────────────────────
 
 type AttrKey = keyof Attributes;
 type WeightMap = Partial<Record<AttrKey, number>>;
 
-/** Weighted 0–100 score of a player's attributes under a weight map. */
 export function weighted(attrs: Attributes, w: WeightMap): number {
   let sum = 0;
   let tot = 0;
@@ -21,26 +20,25 @@ export function weighted(attrs: Attributes, w: WeightMap): number {
   return tot === 0 ? 0 : sum / tot;
 }
 
-/** Base attribute emphasis per position role. */
+/** Base attribute emphasis per role over {buildUp, progression, finishing, pressWork, defending}. */
 const ROLE_WEIGHTS: Record<Position, WeightMap> = {
-  GK: { positioning: 0.5, buildUp: 0.3, aerial: 0.2 },
-  CB: { tackling: 1, positioning: 1, aerial: 0.8, pace: 0.6, buildUp: 0.5 },
-  RB: { pace: 0.9, stamina: 0.9, tackling: 0.7, positioning: 0.6, buildUp: 0.5, creativity: 0.4 },
-  LB: { pace: 0.9, stamina: 0.9, tackling: 0.7, positioning: 0.6, buildUp: 0.5, creativity: 0.4 },
-  RWB: { pace: 1, stamina: 1, creativity: 0.6, dribbling: 0.6, tackling: 0.5, buildUp: 0.5 },
-  LWB: { pace: 1, stamina: 1, creativity: 0.6, dribbling: 0.6, tackling: 0.5, buildUp: 0.5 },
-  DM: { tackling: 1, positioning: 1, stamina: 0.8, buildUp: 0.8, pressing: 0.6 },
-  CM: { stamina: 0.9, buildUp: 0.9, creativity: 0.8, pressing: 0.7, tackling: 0.6, positioning: 0.6 },
-  AM: { creativity: 1, buildUp: 0.8, dribbling: 0.8, finishing: 0.7, positioning: 0.6 },
-  RM: { pace: 0.9, stamina: 0.9, creativity: 0.7, dribbling: 0.8, pressing: 0.6, finishing: 0.5 },
-  LM: { pace: 0.9, stamina: 0.9, creativity: 0.7, dribbling: 0.8, pressing: 0.6, finishing: 0.5 },
-  RW: { pace: 1, dribbling: 0.9, creativity: 0.8, finishing: 0.8, pressing: 0.6 },
-  LW: { pace: 1, dribbling: 0.9, creativity: 0.8, finishing: 0.8, pressing: 0.6 },
-  SS: { finishing: 1, creativity: 0.8, positioning: 0.8, dribbling: 0.7, pace: 0.6 },
-  ST: { finishing: 1, positioning: 0.9, aerial: 0.7, pace: 0.7, pressing: 0.6 },
+  GK: { defending: 0.7, buildUp: 0.3 },
+  CB: { defending: 1, buildUp: 0.6, pressWork: 0.5, progression: 0.3 },
+  RB: { pressWork: 0.85, progression: 0.8, defending: 0.7, buildUp: 0.5 },
+  LB: { pressWork: 0.85, progression: 0.8, defending: 0.7, buildUp: 0.5 },
+  RWB: { progression: 1, pressWork: 1, buildUp: 0.5, defending: 0.5 },
+  LWB: { progression: 1, pressWork: 1, buildUp: 0.5, defending: 0.5 },
+  DM: { defending: 0.9, buildUp: 0.9, pressWork: 0.8, progression: 0.5 },
+  CM: { buildUp: 0.85, progression: 0.8, pressWork: 0.8, defending: 0.6, finishing: 0.4 },
+  AM: { progression: 1, buildUp: 0.8, finishing: 0.8, pressWork: 0.4 },
+  RM: { progression: 0.9, pressWork: 0.8, buildUp: 0.6, finishing: 0.6 },
+  LM: { progression: 0.9, pressWork: 0.8, buildUp: 0.6, finishing: 0.6 },
+  RW: { progression: 1, finishing: 0.85, pressWork: 0.6, buildUp: 0.5 },
+  LW: { progression: 1, finishing: 0.85, pressWork: 0.6, buildUp: 0.5 },
+  SS: { finishing: 1, progression: 0.85, buildUp: 0.6 },
+  ST: { finishing: 1, progression: 0.7, pressWork: 0.6, defending: 0.3 },
 };
 
-/** Position families for emergency / out-of-position fills. */
 const FAMILY: Position[][] = [
   ["RB", "LB", "RWB", "LWB"],
   ["CB"],
@@ -50,18 +48,7 @@ const FAMILY: Position[][] = [
   ["ST", "SS"],
 ];
 
-function sameFamily(a: Position, b: Position): boolean {
-  return FAMILY.some((f) => f.includes(a) && f.includes(b));
-}
-
-/** How naturally a player fills a role (0–1). */
-export function positionMatch(player: Player, role: Position): number {
-  if (player.primary === role) return 1;
-  if (player.eligible.includes(role)) return 0.86;
-  if (player.eligible.some((p) => sameFamily(p, role))) return 0.7;
-  if (player.group === groupOf(role)) return 0.4;
-  return 0.2;
-}
+const sameFamily = (a: Position, b: Position) => FAMILY.some((f) => f.includes(a) && f.includes(b));
 
 function groupOf(role: Position): Player["group"] {
   if (role === "GK") return "GK";
@@ -70,34 +57,32 @@ function groupOf(role: Position): Player["group"] {
   return "FW";
 }
 
+export function positionMatch(player: Player, role: Position): number {
+  if (player.primary === role) return 1;
+  if (player.eligible.includes(role)) return 0.86;
+  if (player.eligible.some((p) => sameFamily(p, role))) return 0.7;
+  if (player.group === groupOf(role)) return 0.4;
+  return 0.2;
+}
+
 const WIDE: Position[] = ["RB", "LB", "RWB", "LWB", "RW", "LW", "RM", "LM"];
 
-/**
- * Modulate base role weights by the coach's style axes — MULTIPLICATIVELY, so a
- * strong style sharply re-ranks who fits. This is the engine's discrimination:
- * same player is worth very different amounts to a gegenpress vs a possession
- * coach. Still a linear weighted sum downstream → fully explainable.
- */
+/** Multiply base role weights by how much the coach's style values each trait. */
 export function styleWeights(role: Position, axes: StyleAxes): WeightMap {
   const base: WeightMap = { ...ROLE_WEIGHTS[role] };
   const n = (v: number) => v / 100;
   const press = n(axes.pressHeight);
-  const buildDemand = n((axes.possession + axes.buildFromBack) / 2);
-  const poss = n(axes.possession);
+  const build = n((axes.possession + axes.buildFromBack) / 2);
   const vert = n((axes.verticality + axes.tempo) / 2);
   const wide = n(axes.width);
 
-  // per-attribute multiplier reflecting how much THIS coach values it
   const MULT: Partial<Record<AttrKey, number>> = {
-    pressing: 0.5 + 1.15 * press,
-    stamina: 0.8 + 0.5 * press,
-    buildUp: 0.5 + 1.1 * buildDemand,
-    creativity: 0.65 + 0.95 * poss,
-    dribbling: 0.85 + 0.3 * poss,
-    pace: 0.65 + 0.85 * vert + (WIDE.includes(role) ? 0.35 * wide : 0),
+    pressWork: 0.5 + 1.15 * press,
+    buildUp: 0.55 + 1.0 * build,
+    progression: 0.7 + 0.7 * vert + (WIDE.includes(role) ? 0.3 * wide : 0),
     finishing: 0.95 + 0.12 * vert,
+    defending: 1,
   };
-
   for (const k in base) {
     const m = MULT[k as AttrKey];
     if (m !== undefined) base[k as AttrKey] = base[k as AttrKey]! * m;
@@ -108,7 +93,6 @@ export function styleWeights(role: Position, axes: StyleAxes): WeightMap {
 /** Player's fit (0–100) for a slot under a coach's system. */
 export function slotScore(player: Player, role: Position, axes: StyleAxes): number {
   if (role === "GK") {
-    // GKs scored on keeper rating + distribution weighted by build-from-back.
     const gk = player.gkRating ?? 40;
     const dist = player.attributes.buildUp;
     const w = axes.buildFromBack / 100;
@@ -116,6 +100,7 @@ export function slotScore(player: Player, role: Position, axes: StyleAxes): numb
   }
   const pm = positionMatch(player, role);
   const attr = weighted(player.attributes, styleWeights(role, axes));
-  // position match gates the attribute score (out-of-position players punished).
-  return pm * attr;
+  // small lift for genuine NT fit + current form
+  const intangible = 0.9 + 0.06 * (player.attributes.ntFit / 100) + 0.04 * (player.attributes.form / 100);
+  return pm * attr * intangible;
 }

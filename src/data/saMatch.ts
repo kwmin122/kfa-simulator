@@ -2,9 +2,10 @@ import type { SaTag } from "./types";
 
 // ──────────────────────────────────────────────────────────────────────────
 // South Africa match diagnosis — 2026.6.25, 대한민국 0-1 남아프리카공화국.
-// Tags are derived from public match reporting (not opta event data). Each tag
-// declares which tactical traits MITIGATE it, so the engine can score whether a
-// candidate coach's system would have addressed the problem (반사실 #7).
+// The 6 problems are defined per the service's framing. Each declares, in
+// ABSOLUTE terms, the tactical traits that FIX it (not "vs Hong"). So the
+// weakness-fix axis measures whether a coach's system genuinely solves the
+// problem — and Hong, whose system produced these problems, scores low.
 // ──────────────────────────────────────────────────────────────────────────
 
 export const SA_MATCH = {
@@ -12,8 +13,8 @@ export const SA_MATCH = {
   opponent: "남아프리카공화국",
   score: { kr: 0, opp: 1 },
   context:
-    "월드컵 조별리그. 손흥민·이재성을 벤치에 두고 오현규·황희찬 선발 로테이션. 전반 열세 후 " +
-    "후반 시작 대거 교체에도 반등하지 못하고 0-1 패. 조 3위 추락, FIFA 랭킹 25→28위.",
+    "월드컵 조별리그. 손흥민·이재성을 벤치에 두고 로테이션 가동, 다수 점유에도 무득점 0-1 패. " +
+    "조 3위 추락, FIFA 랭킹 25→28위. 32강 진출마저 불투명해진 위기.",
   sources: [
     "https://www.olympics.com/ko/news/football-korea-south-africa-fifa-world-cup-2026",
     "https://www.newspim.com/news/view/20260625000807",
@@ -23,57 +24,57 @@ export const SA_MATCH = {
 
 export const saTags: SaTag[] = [
   {
-    key: "bluntAttack",
-    label: "무딘 공격 / 결정력 부재",
-    evidence: "다수 점유에도 유효슈팅·골 생산 실패, 0-1 무득점 패.",
-    mitigatedBy: {
-      axes: { verticality: 70, tempo: 65 },
-      requirements: ["mobileStriker", "paceWingers", "creativeAM"],
+    key: "finalThirdCreativity",
+    label: "마지막 1/3 창의성 부족",
+    evidence: "점유는 했지만 박스 근처에서 키패스·침투가 막혔다.",
+    fixedBy: {
+      axes: { possession: { prefer: "high", target: 70 }, verticality: { prefer: "high", target: 66 } },
+      requirements: ["creativeAM", "pressResistantMF"],
     },
   },
   {
-    key: "noPenetration",
-    label: "침투 부재 / 배후 공략 실패",
-    evidence: "측면·배후 침투가 적어 상대 블록을 흔들지 못함.",
-    mitigatedBy: {
-      axes: { width: 65, verticality: 72 },
-      requirements: ["paceWingers", "overlappingFB", "mobileStriker"],
+    key: "sonUsage",
+    label: "손흥민 활용 불명확",
+    evidence: "에이스를 벤치에 두거나 왼쪽에 고립시켜 영향력을 죽였다.",
+    fixedBy: {
+      axes: { verticality: { prefer: "high", target: 66 }, tempo: { prefer: "high", target: 60 } },
+      requirements: ["paceWingers"],
     },
   },
   {
-    key: "slowBuildUp",
-    label: "느린 빌드업 / 전개 정체",
-    evidence: "후방-중원 전개가 느려 상대 정비 시간을 허용.",
-    mitigatedBy: {
-      axes: { tempo: 68, buildFromBack: 70 },
-      requirements: ["ballPlayingCB", "pressResistantMF", "boxToBoxCM"],
+    key: "lkiIsolation",
+    label: "이강인 고립 또는 과의존",
+    evidence: "창조를 한 명에게만 의존하거나, 볼 터치를 보장하지 못했다.",
+    fixedBy: {
+      axes: { possession: { prefer: "high", target: 72 }, buildFromBack: { prefer: "high", target: 70 } },
+      requirements: ["pressResistantMF", "creativeAM"],
     },
   },
   {
-    key: "rotationMisfire",
-    label: "로테이션 실패 / 베스트 전력 미가동",
-    evidence: "손흥민·이재성 벤치 선발이 경기력 저하로 직결됐다는 비판.",
-    mitigatedBy: {
-      // mitigated by systems that maximize the best XI's stars (leadership/creativity-led)
-      requirements: ["creativeAM"],
+    key: "boxThreat",
+    label: "박스 안 위협 부족",
+    evidence: "크로스·침투·세컨볼 모두 상대 박스 안에서 위협을 만들지 못했다.",
+    fixedBy: {
+      axes: { verticality: { prefer: "high", target: 68 }, width: { prefer: "high", target: 64 } },
+      requirements: ["mobileStriker", "targetStriker", "overlappingFB"],
     },
   },
   {
-    key: "lowPressTrigger",
-    label: "압박 트리거 부재 / 수동적 수비",
-    evidence: "고정된 전방 압박 신호 없이 물러서며 주도권 상실.",
-    mitigatedBy: {
-      axes: { pressHeight: 70 },
-      requirements: ["highStaminaFront", "holdingDM"],
+    key: "slowTempo",
+    label: "느린 템포",
+    evidence: "전개가 느려 상대가 수비를 정비할 시간을 줬다.",
+    fixedBy: {
+      axes: { tempo: { prefer: "high", target: 66 }, verticality: { prefer: "high", target: 64 } },
+      requirements: ["pressResistantMF"],
     },
   },
   {
-    key: "lateGameFade",
-    label: "교체·후반 운영 실패",
-    evidence: "후반 대거 교체에도 흐름을 바꾸지 못함.",
-    mitigatedBy: {
-      axes: { pressHeight: 62 },
-      requirements: ["highStaminaFront"],
+    key: "lowFinishing",
+    label: "높은 점유 대비 낮은 결정력",
+    evidence: "기회의 질이 낮고 마무리가 무뎌 0득점에 그쳤다.",
+    fixedBy: {
+      axes: { verticality: { prefer: "high", target: 66 } },
+      requirements: ["mobileStriker", "paceWingers"],
     },
   },
 ];

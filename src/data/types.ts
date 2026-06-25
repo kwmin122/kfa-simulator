@@ -1,164 +1,172 @@
 // ──────────────────────────────────────────────────────────────────────────
-// Core domain types for the deterministic coach-fit engine.
-// All attribute numbers are 0–100 SUBJECTIVE ESTIMATES anchored to public
-// ratings (EA Sports FC) + scouting profile. Not official stats. See /methodology.
+// Domain model (v2). Attributes are TACTIC-MATCHED categories (not FIFA-style
+// overalls) so they feed coach matching directly. All 0–100 numbers are
+// SUBJECTIVE ESTIMATES informed by public profiles (Transfermarkt / FBref /
+// FotMob) + curation — not official stats. See /methodology.
 // ──────────────────────────────────────────────────────────────────────────
 
-/** Fine-grained position roles used for XI slotting. */
 export type Position =
-  | "GK"
-  | "RB"
-  | "RWB"
-  | "CB"
-  | "LB"
-  | "LWB"
-  | "DM"
-  | "CM"
-  | "AM"
-  | "RM"
-  | "LM"
-  | "RW"
-  | "LW"
-  | "SS" // second striker / shadow
-  | "ST";
+  | "GK" | "RB" | "RWB" | "CB" | "LB" | "LWB"
+  | "DM" | "CM" | "AM" | "RM" | "LM"
+  | "RW" | "LW" | "SS" | "ST";
 
-/** Broad bucket for grouping/UI. */
 export type PositionGroup = "GK" | "DF" | "MF" | "FW";
 
-/** The 11 normalized outfield attributes the engine reasons over (0–100). */
+/** Eight tactic-matched player categories (0–100). */
 export interface Attributes {
-  pace: number;
-  stamina: number;
-  pressing: number; // willingness + engine to press high
-  buildUp: number; // progressive/secure passing
-  creativity: number; // chance creation, vision, final ball
-  dribbling: number; // 1v1 carrying
-  finishing: number; // goal threat
-  aerial: number; // duels in the air
-  tackling: number; // ball-winning, defensive actions
-  positioning: number; // off-ball intelligence both phases
-  leadership: number; // experience, on-pitch authority
+  buildUp: number;     // 빌드업: 압박 하 전진패스·탈압박·롱패스·좌우 전환
+  progression: number; // 전진성: 볼 운반·침투 패스·라인 사이 포지셔닝
+  finishing: number;   // 마무리: 박스 안 결정력·오프볼 침투·슈팅 볼륨
+  pressWork: number;   // 압박/활동량: 전방 압박·복귀·커버 범위
+  defending: number;   // 수비 안정성: 1v1·공중볼·뒷공간 대응·위치선정
+  versatility: number; // 전술 유연성: 멀티 포지션·백3/백4·인버티드
+  ntFit: number;       // 국대 적합성: 대표팀 실제 역할·주변 시너지
+  form: number;        // 최근 폼: 출전 시간·부상·경기 감각
+}
+
+export const ATTR_LABEL: Record<keyof Attributes, string> = {
+  buildUp: "빌드업",
+  progression: "전진성",
+  finishing: "마무리",
+  pressWork: "압박·활동량",
+  defending: "수비 안정성",
+  versatility: "전술 유연성",
+  ntFit: "국대 적합성",
+  form: "최근 폼",
+};
+
+/** Deep indicator for the emotional-core players (Son / Lee Kang-in / Kim Min-jae). */
+export interface CoreProfile {
+  /** Roles where this player is genuinely elite. */
+  bestRoles: Position[];
+  /** Tactical conditions that must hold for them to thrive (absolute). */
+  conditions: { axis: keyof StyleAxes; prefer: "high" | "low"; target: number; weight: number; label: string }[];
+  thrive: string; // KR — when they come alive
+  die: string;    // KR — when they get killed
 }
 
 export interface Player {
   id: string;
-  name: string; // Korean display name
+  name: string;
   nameEn: string;
   number?: number;
   group: PositionGroup;
   primary: Position;
-  /** All positions the player can credibly fill (includes primary). */
   eligible: Position[];
   age: number;
   club: string;
   caps?: number;
+  marketValueM?: number; // €m, Transfermarkt-style
   foot: "L" | "R" | "B";
   captain?: boolean;
   attributes: Attributes;
-  /** Goalkeeper-only overall (0–100); undefined for outfielders. */
-  gkRating?: number;
-  /** EA FC overall we anchored to, for transparency. */
-  fcAnchor?: number;
-  note?: string; // one-line scouting tag (KR)
+  gkRating?: number; // GK shot-stopping (0–100)
+  /** Strengths/weaknesses are curated here (not derived) for key players. */
+  strengths?: string[];
+  weaknesses?: string[];
+  note?: string;
+  core?: CoreProfile;
 }
 
 // ── Coach / tactical model ────────────────────────────────────────────────
 
-export type CoachTier = "national" | "free" | "club";
+export type CoachTier = "national" | "free" | "club" | "domestic" | "media";
 
-/** Six tactical style axes (0–100). Each has a named low/high pole in the UI. */
+/** Tactical demand axes (0–100). */
 export interface StyleAxes {
-  possession: number; // 0 = direct/long, 100 = patient possession
-  pressHeight: number; // 0 = deep block, 100 = high press
-  tempo: number; // 0 = slow/controlled, 100 = high tempo/vertical
-  width: number; // 0 = narrow, 100 = touchline width
-  verticality: number; // 0 = circulation, 100 = fast forward penetration
-  buildFromBack: number; // 0 = bypass/long, 100 = play out from GK/CB
+  possession: number;    // 0 직선/롱볼 — 100 점유
+  pressHeight: number;   // 0 로우블록 — 100 하이프레스
+  tempo: number;         // 0 통제 — 100 고템포
+  width: number;         // 0 좁게 — 100 측면 폭
+  verticality: number;   // 0 순환 — 100 빠른 수직 침투
+  buildFromBack: number; // 0 후방 우회 — 100 후방 빌드업
 }
 
-/** A weighted squad requirement the coach's system demands. */
-export interface Requirement {
-  key: RequirementKey;
-  weight: number; // 0–1 importance
-  label: string; // KR human label
+/** Intangibles that decide tournament suitability (axis 4). */
+export interface Intangibles {
+  complexity: number;         // 전술 복잡도 (높을수록 단기전 불리)
+  planB: number;              // 플랜 B 보유
+  tournamentXP: number;       // 토너먼트 경험
+  defensiveStability: number; // 수비 안정 지향
+  starManagement: number;     // 스타 선수 관리
+}
+
+/** Realism of actually landing the Korea job (axis 5). */
+export interface Realism {
+  koreaPlausibility: number; // 연봉·커리어상 한국행 가능성
+  available: number;         // 계약 여부 (무직 = 높음)
+  asiaNtXP: number;          // 아시아/국가대표 경험
+  squadControl: number;      // 선수단 장악력
 }
 
 export type RequirementKey =
-  | "ballPlayingCB"
-  | "paceWingers"
-  | "holdingDM"
-  | "boxToBoxCM"
-  | "creativeAM"
-  | "mobileStriker"
-  | "targetStriker"
-  | "overlappingFB"
-  | "pressResistantMF"
-  | "highStaminaFront"
-  | "aerialCB"
-  | "sweeperKeeper";
+  | "ballPlayingCB" | "paceWingers" | "holdingDM" | "boxToBoxCM"
+  | "creativeAM" | "mobileStriker" | "targetStriker" | "overlappingFB"
+  | "pressResistantMF" | "highStaminaFront" | "aerialCB" | "sweeperKeeper";
+
+export interface Requirement {
+  key: RequirementKey;
+  weight: number; // 0–1
+  label: string;
+}
 
 export interface Coach {
   id: string;
   name: string;
   nameEn: string;
   tier: CoachTier;
-  /** Current job / status (KR). */
-  status: string;
+  status: string;       // verified current job (KR)
+  rumor?: string;       // why Korean fans talk about them (KR)
   nationality: string;
   age?: number;
-  /** Primary formation, e.g. "4-3-3". */
   formation: string;
   altFormations?: string[];
   axes: StyleAxes;
   requirements: Requirement[];
-  dna: string[]; // tactical DNA tags (KR), e.g. ["게겐프레스", "풀백 인버티드"]
-  blurb: string; // one-paragraph identity (KR)
-  /** True when we have a full tactical profile; false = "프로필 필요". */
+  intangibles: Intangibles;
+  realism: Realism;
+  dna: string[];
+  blurb: string;
   profiled: boolean;
-  sources: string[]; // URLs we used
+  sources: string[];
 }
 
 // ── South Africa match diagnosis ──────────────────────────────────────────
 
 export type SaTagKey =
-  | "bluntAttack"
-  | "noPenetration"
-  | "slowBuildUp"
-  | "rotationMisfire"
-  | "lowPressTrigger"
-  | "lateGameFade";
+  | "finalThirdCreativity" // 마지막 1/3 창의성 부족
+  | "sonUsage"             // 손흥민 활용 불명확
+  | "lkiIsolation"         // 이강인 고립 또는 과의존
+  | "boxThreat"            // 박스 안 위협 부족
+  | "slowTempo"            // 느린 템포
+  | "lowFinishing";        // 높은 점유 대비 낮은 결정력
 
 export interface SaTag {
   key: SaTagKey;
-  label: string; // KR
-  evidence: string; // what in the match suggests it (KR)
-  /** Style axes / requirements whose presence mitigates this problem. */
-  mitigatedBy: {
-    axes?: Partial<Record<keyof StyleAxes, number>>; // axis → target level that helps
+  label: string;
+  evidence: string;
+  /** Absolute: tactical traits that, if present, FIX this problem. */
+  fixedBy: {
+    axes?: Partial<Record<keyof StyleAxes, { prefer: "high" | "low"; target: number }>>;
     requirements?: RequirementKey[];
   };
 }
 
-// ── Simulation output (the "simulations" entity) ──────────────────────────
-// Produced deterministically by the engine from (coach × squad). This is the
-// contract the UI renders. Every number is a MODEL ESTIMATE, label as such.
+// ── Simulation output ─────────────────────────────────────────────────────
 
-/** One filled slot in the best XI. */
 export interface XiSlot {
   role: Position;
   player: Player;
-  /** 0–100 how well this player fits this slot in this system. */
   slotFit: number;
 }
 
-/** Six fit sub-scores driving the radar (0–100). */
-export interface SubScores {
-  buildUp: number;
-  press: number;
-  transition: number;
-  attack: number;
-  defense: number;
-  depth: number;
+/** The five squad-fit axes (each on its own max). */
+export interface FiveAxes {
+  coreImpact: number;     // 0–30 핵심 선수 버프/너프
+  tacticalExec: number;   // 0–25 전술 수행 가능성
+  weaknessFix: number;    // 0–20 약점 보완도
+  tournamentFit: number;  // 0–15 월드컵 단기전 적합도
+  realism: number;        // 0–10 현실 리스크
 }
 
 export type VerdictLevel = "thrives" | "neutral" | "sacrificed" | "benched";
@@ -166,73 +174,67 @@ export type VerdictLevel = "thrives" | "neutral" | "sacrificed" | "benched";
 export interface PlayerVerdict {
   playerId: string;
   level: VerdictLevel;
-  /** signed delta vs baseline usefulness, for sorting (−100..100). */
-  delta: number;
-  reason: string; // KR, templated from the numbers
+  buff: number;     // signed −15..+15 (absolute role suitability vs their ceiling)
+  reason: string;
   inXi: boolean;
 }
 
 export interface SaTagResolution {
   key: SaTagKey;
   label: string;
-  /** 0–100 how much this coach's system mitigates the problem. */
-  mitigation: number;
-  verdict: "solved" | "improved" | "unchanged"; // ✅ / △ / ❌
-  reason: string; // KR
+  mitigation: number; // 0–100 absolute
+  verdict: "solved" | "improved" | "unchanged";
+  reason: string;
 }
 
-export type WcRound =
-  | "group"
-  | "round32"
-  | "round16"
-  | "quarter"
-  | "semi"
-  | "final";
+export type WcRound = "group" | "round32" | "round16" | "quarter" | "semi" | "final";
 
 export interface WcReach {
-  /** probability mass per round reached (0–1), sums conceptually to 1. */
   probs: Record<WcRound, number>;
-  /** most likely round + qualitative band. */
   expected: WcRound;
   band: "낮음" | "중간" | "높음";
-  /** model probability of escaping the group (0–100). */
   adv16: number;
 }
 
-/** Estimated expected goals for a neutral WC group match (model estimate). */
 export interface PredictedXg {
   for: number;
   against: number;
 }
 
-/** The full simulation result for one coach against the current squad. */
 export interface SimulationResult {
   coachId: string;
   squadVersion: string;
   formation: string;
   xi: XiSlot[];
-  fitScore: number; // 0–100 overall
-  subScores: SubScores;
-  strengths: string[]; // KR, derived
-  weaknesses: string[]; // KR, derived
-  keyVerdicts: PlayerVerdict[]; // Son / Lee Kang-in / Kim Min-jae + movers
+  fitScore: number;       // 0–100 = sum of FiveAxes
+  axes: FiveAxes;
+  teamStyle: TeamStyle;   // for the "어떤 축구" radar
+  strengths: string[];
+  weaknesses: string[];
+  keyVerdicts: PlayerVerdict[];
   saResolution: SaTagResolution[];
-  saCounterfactual: {
-    /** shift in result likelihood vs the actual 0-1 loss. */
-    summary: string; // KR
-    winShift: number; // −100..100 (positive = more likely to avoid defeat)
-  };
+  saCounterfactual: { summary: string; winShift: number };
   predictedXg: PredictedXg;
   wcReach: WcReach;
-  explanation: string; // KR narrative, templated (no AI)
+  explanation: string;
 }
 
-/** Ranking row for the compatibility board. */
+/** Team-level radar of how the side will actually play (0–100). */
+export interface TeamStyle {
+  buildUp: number;
+  press: number;
+  transition: number;
+  attack: number;
+  defense: number;
+  control: number;
+}
+
 export interface RankingRow {
   coachId: string;
   coachName: string;
   tier: CoachTier;
   fitScore: number;
   expected: WcRound;
+  realism: number;
   profiled: boolean;
 }

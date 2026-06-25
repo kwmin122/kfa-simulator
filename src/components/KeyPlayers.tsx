@@ -28,10 +28,10 @@ export default function KeyPlayers({ verdicts }: { verdicts: PlayerVerdict[] }) 
                 <span className="text-xs font-semibold" style={{ color: m.color }}>
                   {m.label}
                 </span>
-                {v.delta !== 0 && (
+                {v.buff !== 0 && (
                   <span className="font-mono text-[11px] text-muted">
-                    {v.delta > 0 ? "+" : ""}
-                    {v.delta}
+                    {v.buff > 0 ? "+" : ""}
+                    {v.buff}
                   </span>
                 )}
               </div>
