@@ -47,7 +47,26 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Ferrofluid blobs */
+.ferro-blob {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation-name: ferro-drift;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+@keyframes ferro-drift {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(8px, -6px) scale(1.18); }
+  100% { transform: translate(-6px, 7px) scale(0.9); }
+}
+
+/* scrollbar + selection polish */
+::selection { background: color-mix(in srgb, var(--accent) 35%, transparent); }
+
 @media (prefers-reduced-motion: reduce) {
+  .ferro-blob { animation: none !important; }
   *,
   *::before,
   *::after {

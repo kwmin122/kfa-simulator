@@ -1,56 +1,158 @@
+import Link from "next/link";
+import CircularGallery from "@/components/CircularGallery";
+import RankingBoard from "@/components/RankingBoard";
+import Reveal from "@/components/Reveal";
+import CountUp from "@/components/CountUp";
+import { squad } from "@/data/squad";
+import { requirementSupply } from "@/engine";
+import { allCandidates, candidatesByFit, getSim, ranking } from "@/lib/sims";
+import { fitTone, ROUND_LABEL } from "@/lib/format";
+
+const galleryItems = allCandidates.map((c) => ({
+  id: c.id,
+  name: c.name,
+  tier: c.tier,
+  formation: c.formation,
+  fit: getSim(c.id)?.fitScore ?? 0,
+  dna: c.dna,
+}));
+
+// structural squad weaknesses (lowest-supply requirements) for the way-forward
+const STRUCTURAL = (
+  [
+    { key: "ballPlayingCB", label: "후방 빌드업 CB" },
+    { key: "sweeperKeeper", label: "빌드업 가담 GK" },
+    { key: "targetStriker", label: "제공권 타깃 9번" },
+    { key: "creativeAM", label: "창의적 10번" },
+    { key: "paceWingers", label: "스피드 윙어" },
+  ] as const
+)
+  .map((r) => ({ ...r, supply: Math.round(requirementSupply(r.key, squad)) }))
+  .sort((a, b) => a.supply - b.supply);
+
+const top3 = candidatesByFit.slice(0, 3);
+
 export default function Home() {
+  const best = top3[0];
+  const bestSim = getSim(best.id)!;
+
   return (
-    <main className="relative flex flex-1 flex-col items-center justify-center overflow-hidden px-6 py-24">
-      {/* ambient backdrop — placeholder until React Bits Ferrofluid layer (M3) */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          background:
-            "radial-gradient(60% 60% at 50% 30%, rgba(47,91,255,0.18), transparent 70%), radial-gradient(40% 40% at 70% 80%, rgba(228,0,43,0.14), transparent 70%)",
-        }}
-      />
+    <main className="mx-auto w-full max-w-6xl px-5">
+      {/* ── Hero ───────────────────────────────────────────── */}
+      <section className="flex flex-col items-center pb-10 pt-16 text-center sm:pt-24">
+        <Reveal immediate>
+          <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface/70 px-4 py-1.5 text-xs font-medium text-muted">
+            <span className="size-1.5 animate-pulse rounded-full bg-bad" />
+            2026.6.25 · 대한민국 0–1 남아공 · 조 3위 · FIFA 28위
+          </span>
+        </Reveal>
+        <Reveal immediate delay={0.06}>
+          <h1 className="text-balance text-5xl font-black leading-[1.05] tracking-tight sm:text-7xl">
+            <span className="text-kr-red">만약,</span> 이 감독이었다면
+          </h1>
+        </Reveal>
+        <Reveal immediate delay={0.12}>
+          <p className="mt-6 max-w-xl text-pretty leading-7 text-muted">
+            한국 축구 <span className="text-foreground">황금세대</span>가 너무 아까워서 만든
+            팬 시뮬레이션. 현 26인 스쿼드는 그대로 두고, 후보 감독의 전술 DNA를 넣으면
+            <span className="text-foreground"> 어떤 축구를 하고, 손흥민·이강인·김민재가 살아날지,
+            월드컵 몇 강까지</span> 갈지 — 설명 가능한 점수 엔진이 돌려봅니다.
+          </p>
+        </Reveal>
 
-      <div className="flex w-full max-w-3xl flex-col items-center text-center">
-        <span className="mb-6 inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-xs font-medium tracking-wide text-muted">
-          <span className="size-1.5 rounded-full bg-bad" />
-          2026.6.25 · 대한민국 0–1 남아프리카공화국 · 조 3위 · FIFA 28위
-        </span>
+        <Reveal immediate delay={0.18}>
+          <div className="mt-9 flex items-stretch gap-3 sm:gap-5">
+            {[
+              { label: "후보 감독", value: allCandidates.length, suffix: "명" },
+              { label: "분석 선수", value: squad.length, suffix: "명" },
+              { label: "런타임 AI·비용", value: 0, suffix: "" },
+            ].map((s) => (
+              <div key={s.label} className="rounded-2xl border border-border bg-surface/60 px-5 py-3">
+                <div className="font-mono text-3xl font-black text-accent">
+                  <CountUp to={s.value} suffix={s.suffix} />
+                </div>
+                <div className="mt-0.5 text-[11px] text-muted">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </section>
 
-        <h1 className="text-balance text-4xl font-black leading-tight tracking-tight sm:text-6xl">
-          이 감독이 오면,
-          <br />
-          한국은 <span className="text-accent">어떤 축구</span>를 할까?
-        </h1>
+      {/* ── Circular gallery ───────────────────────────────── */}
+      <section className="py-12">
+        <Reveal>
+          <h2 className="mb-1 text-center text-sm font-bold uppercase tracking-widest text-accent">
+            감독을 골라보세요
+          </h2>
+          <p className="mb-8 text-center text-xs text-muted">카드를 돌리고, 가운데 감독을 누르면 정밀 분석으로 이동합니다</p>
+        </Reveal>
+        <CircularGallery items={galleryItems} />
+      </section>
 
-        <p className="mt-6 max-w-xl text-pretty text-base leading-7 text-muted sm:text-lg">
-          현 26인 스쿼드를 고정하고, 후보 감독의 전술 DNA를 넣으면
-          <br className="hidden sm:block" />
-          베스트 11 · 적합도 · 핵심선수 생사 · 남아공전 반사실 · 월드컵 예상도를
-          <br className="hidden sm:block" />
-          <span className="text-foreground">설명 가능한 점수 엔진</span>으로
-          계산합니다. 런타임 AI 없음 · 100% 무료.
-        </p>
-
-        <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-          <button
-            disabled
-            className="flex h-12 items-center justify-center rounded-full bg-foreground px-7 text-sm font-bold text-background opacity-50"
-          >
-            감독 선택하기 (준비 중)
-          </button>
-          <a
-            href="/methodology/"
-            className="flex h-12 items-center justify-center rounded-full border border-border px-7 text-sm font-medium text-foreground transition-colors hover:bg-surface"
-          >
-            방법론 · 데이터 출처
-          </a>
+      {/* ── Ranking ────────────────────────────────────────── */}
+      <section id="ranking" className="scroll-mt-20 py-12">
+        <Reveal>
+          <h2 className="text-2xl font-black tracking-tight">스쿼드 궁합 랭킹</h2>
+          <p className="mt-1 text-sm text-muted">현 26인과의 적합도 순위 · 3층(현직 국대 / 무직 / 클럽)</p>
+        </Reveal>
+        <div className="mt-6">
+          <RankingBoard rows={ranking} />
         </div>
+      </section>
 
-        <p className="mt-16 font-mono text-[11px] uppercase tracking-widest text-muted/60">
-          M0 · static export pipeline ✓
-        </p>
-      </div>
+      {/* ── Way forward ────────────────────────────────────── */}
+      <section id="way-forward" className="scroll-mt-20 py-12">
+        <Reveal>
+          <h2 className="text-2xl font-black tracking-tight">앞으로 한국 국대를 어떻게?</h2>
+          <p className="mt-1 text-sm text-muted">랭킹·적합도·문제 해결을 묶은 종합 제언 — 모델 추정</p>
+        </Reveal>
+
+        <div className="mt-6 grid gap-4 lg:grid-cols-2">
+          <Reveal>
+            <div className="rounded-2xl border border-border bg-surface p-5">
+              <h3 className="text-sm font-bold text-foreground">최적 궁합 Top 3</h3>
+              <div className="mt-3 space-y-3">
+                {top3.map((c, i) => {
+                  const sim = getSim(c.id)!;
+                  return (
+                    <Link key={c.id} href={`/coach/${c.id}`} className="flex items-center gap-3 rounded-xl bg-background/50 p-2.5 transition-colors hover:bg-background">
+                      <span className="font-mono text-lg font-black" style={{ color: fitTone(sim.fitScore) }}>{i + 1}</span>
+                      <div className="flex-1">
+                        <div className="font-bold">{c.name}</div>
+                        <div className="text-[11px] text-muted">{c.dna.slice(0, 2).join("·")} · 예상 {ROUND_LABEL[sim.wcReach.expected]}</div>
+                      </div>
+                      <span className="font-mono text-xl font-bold" style={{ color: fitTone(sim.fitScore) }}>{sim.fitScore}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.08}>
+            <div className="rounded-2xl border border-border bg-surface p-5">
+              <h3 className="text-sm font-bold text-foreground">스쿼드의 구조적 약점</h3>
+              <p className="mt-1 text-xs text-muted">감독을 바꿔도 남는, 선수 구성 차원의 빈자리</p>
+              <div className="mt-3 space-y-2">
+                {STRUCTURAL.slice(0, 3).map((r) => (
+                  <div key={r.key} className="flex items-center gap-2">
+                    <span className="w-28 shrink-0 text-xs text-foreground">{r.label}</span>
+                    <div className="h-2 flex-1 overflow-hidden rounded-full bg-background">
+                      <div className="h-full rounded-full" style={{ width: `${r.supply}%`, background: fitTone(r.supply) }} />
+                    </div>
+                    <span className="w-7 text-right font-mono text-xs" style={{ color: fitTone(r.supply) }}>{r.supply}</span>
+                  </div>
+                ))}
+              </div>
+              <p className="mt-4 text-sm leading-relaxed text-muted">
+                결론: 현 스쿼드는 <span className="text-foreground">{bestSim.subScores.transition >= 74 ? "빠른 전환·측면 스피드" : "측면 자원"}</span>이 강점이라
+                <span className="text-foreground"> {best.name} 류의 {best.dna[0]}</span> 색채와 가장 잘 맞습니다.
+                다만 <span className="text-foreground">{STRUCTURAL[0].label}</span>의 빈자리는 전술로 가리기 어려워, 장기적으로는 해당 포지션 육성이 핵심입니다.
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
     </main>
   );
 }
