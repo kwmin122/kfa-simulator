@@ -144,7 +144,7 @@ export const squad: Player[] = [
   },
   {
     id: "lee-kangin", name: "이강인", nameEn: "Lee Kang-in", group: "MF",
-    primary: "AM", eligible: ["AM", "RW", "RM"], age: 25, club: "파리 생제르맹", caps: 40, foot: "R",
+    primary: "AM", eligible: ["AM", "CM", "RW", "RM"], age: 25, club: "파리 생제르맹", caps: 40, foot: "R",
     fcAnchor: 82,
     attributes: { pace: 70, stamina: 70, pressing: 58, buildUp: 82, creativity: 88, dribbling: 86, finishing: 70, aerial: 42, tackling: 46, positioning: 74, leadership: 64 },
     note: "탈압박·키패스 최고, 압박 가담은 약점",
