@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+:root {
+  /* Broadcast-dark base */
+  --background: #06080f;
+  --surface: #0d111c;
+  --surface-2: #131a2a;
+  --foreground: #e8ecf5;
+  --muted: #8a93a8;
+  --border: #1e2740;
+
+  /* Brand accents */
+  --kr-red: #e4002b;     /* Taegeuk red */
+  --kr-blue: #2f5bff;    /* electric data blue */
+  --accent: #00e0c6;     /* cyan highlight for metrics */
+  --warn: #ffb020;
+  --good: #2ee6a6;
+  --bad: #ff5470;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-kr-red: var(--kr-red);
+  --color-kr-blue: var(--kr-blue);
+  --color-accent: var(--accent);
+  --color-warn: var(--warn);
+  --color-good: var(--good);
+  --color-bad: var(--bad);
+  --font-sans: var(--font-noto-kr);
+  --font-mono: var(--font-geist-mono);
+}
+
+html {
+  background: var(--background);
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-noto-kr), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
