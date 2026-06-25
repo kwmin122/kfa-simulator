@@ -157,6 +157,132 @@ export const xabiAlonso: Coach = {
   sources: ["https://en.wikipedia.org/wiki/Xabi_Alonso"],
 };
 
+export const flick: Coach = {
+  id: "flick", name: "한지 플릭", nameEn: "Hansi Flick", tier: "club",
+  status: "FC 바르셀로나 (하이라인 압박+점유)", nationality: "독일", age: 61,
+  formation: "4-2-3-1", altFormations: ["4-3-3"],
+  axes: { possession: 86, pressHeight: 86, tempo: 68, width: 74, verticality: 60, buildFromBack: 84 },
+  requirements: [
+    { key: "ballPlayingCB", weight: 0.84, label: "하이라인 빌드업 CB" },
+    { key: "pressResistantMF", weight: 0.84, label: "탈압박 중원" },
+    { key: "highStaminaFront", weight: 0.8, label: "전방 압박 3톱" },
+    { key: "overlappingFB", weight: 0.72, label: "전진 풀백" },
+    { key: "paceWingers", weight: 0.7, label: "측면 침투" },
+    { key: "creativeAM", weight: 0.68, label: "하프스페이스 10번" },
+  ],
+  dna: ["하이라인", "점유+압박", "공격 전환"],
+  blurb: "극단적 하이라인과 강한 전방 압박을 점유와 결합. 라인을 끌어올리는 만큼 빠른 CB와 탈압박 중원이 필수다.",
+  profiled: true, sources: ["https://en.wikipedia.org/wiki/Hansi_Flick"],
+};
+
+export const slot: Coach = {
+  id: "slot", name: "아르네 슬롯", nameEn: "Arne Slot", tier: "club",
+  status: "리버풀 (통제된 점유+압박)", nationality: "네덜란드", age: 47,
+  formation: "4-3-3", altFormations: ["4-2-3-1"],
+  axes: { possession: 78, pressHeight: 80, tempo: 70, width: 70, verticality: 66, buildFromBack: 78 },
+  requirements: [
+    { key: "pressResistantMF", weight: 0.8, label: "탈압박 8번" },
+    { key: "ballPlayingCB", weight: 0.75, label: "빌드업 CB" },
+    { key: "highStaminaFront", weight: 0.78, label: "압박 가담 전방" },
+    { key: "paceWingers", weight: 0.72, label: "스피드 윙어" },
+    { key: "holdingDM", weight: 0.7, label: "균형 6번" },
+    { key: "overlappingFB", weight: 0.68, label: "공격 풀백" },
+  ],
+  dna: ["통제된 점유", "전방 압박", "측면 가속"],
+  blurb: "점유로 통제하되 잃으면 즉시 압박. 빌드업과 전환의 균형형으로, 활동량 좋은 8번이 핵심.",
+  profiled: true, sources: ["https://en.wikipedia.org/wiki/Arne_Slot"],
+};
+
+export const arteta: Coach = {
+  id: "arteta", name: "미켈 아르테타", nameEn: "Mikel Arteta", tier: "club",
+  status: "아스널 (포지셔널·통제)", nationality: "스페인", age: 44,
+  formation: "4-3-3", altFormations: ["3-2-4-1"],
+  axes: { possession: 90, pressHeight: 80, tempo: 54, width: 78, verticality: 46, buildFromBack: 90 },
+  requirements: [
+    { key: "ballPlayingCB", weight: 0.9, label: "후방 빌드업 CB" },
+    { key: "pressResistantMF", weight: 0.85, label: "압박 견디는 중원" },
+    { key: "holdingDM", weight: 0.8, label: "조율형 6번" },
+    { key: "creativeAM", weight: 0.74, label: "하프스페이스 창조형" },
+    { key: "sweeperKeeper", weight: 0.7, label: "빌드업 GK" },
+    { key: "overlappingFB", weight: 0.7, label: "인버티드 풀백" },
+  ],
+  dna: ["포지셔널 플레이", "세트피스", "통제 축구"],
+  blurb: "고도로 통제된 점유와 세트피스 강점. 펩 계열로 발밑 좋은 CB·GK가 전제라 이 스쿼드와는 마찰이 있을 수 있다.",
+  profiled: true, sources: ["https://en.wikipedia.org/wiki/Mikel_Arteta"],
+};
+
+export const simeone: Coach = {
+  id: "simeone", name: "디에고 시메오네", nameEn: "Diego Simeone", tier: "club",
+  status: "아틀레티코 마드리드 (콜초네로 강도)", nationality: "아르헨티나", age: 56,
+  formation: "4-4-2", altFormations: ["5-3-2", "4-2-3-1"],
+  axes: { possession: 38, pressHeight: 52, tempo: 56, width: 52, verticality: 70, buildFromBack: 40 },
+  requirements: [
+    { key: "holdingDM", weight: 0.9, label: "투지형 중원" },
+    { key: "aerialCB", weight: 0.82, label: "제공권 CB" },
+    { key: "highStaminaFront", weight: 0.72, label: "압박·활동량 투톱" },
+    { key: "paceWingers", weight: 0.7, label: "역습 측면" },
+    { key: "mobileStriker", weight: 0.7, label: "전방 압박 9번" },
+    { key: "targetStriker", weight: 0.6, label: "연계 타깃맨" },
+  ],
+  dna: ["콜초네로", "강도·투지", "블록+역습"],
+  blurb: "단단한 블록과 미친 활동량, 빠른 역습. 제공권 CB와 투지형 중원이 핵심이며 스피드 자원과 잘 맞는다.",
+  profiled: true, sources: ["https://en.wikipedia.org/wiki/Diego_Simeone"],
+};
+
+export const deZerbi: Coach = {
+  id: "de-zerbi", name: "로베르토 데 제르비", nameEn: "Roberto De Zerbi", tier: "club",
+  status: "올랭피크 마르세유 (극단적 포지셔널)", nationality: "이탈리아", age: 46,
+  formation: "4-2-3-1", altFormations: ["4-3-3"],
+  axes: { possession: 93, pressHeight: 76, tempo: 56, width: 72, verticality: 54, buildFromBack: 93 },
+  requirements: [
+    { key: "ballPlayingCB", weight: 0.9, label: "압박 유도 빌드업 CB" },
+    { key: "pressResistantMF", weight: 0.9, label: "좁은 공간 탈압박" },
+    { key: "creativeAM", weight: 0.82, label: "라인 사이 10번" },
+    { key: "sweeperKeeper", weight: 0.8, label: "빌드업 GK" },
+    { key: "holdingDM", weight: 0.78, label: "조율 6번" },
+    { key: "overlappingFB", weight: 0.7, label: "폭 제공 풀백" },
+  ],
+  dna: ["극단적 포지셔널", "압박 유도", "후방 빌드업"],
+  blurb: "상대 압박을 일부러 끌어들여 한 번에 무너뜨리는 정교한 빌드업. 창의적 10번이 살아나는 시스템이지만 발밑 좋은 후방이 필수.",
+  profiled: true, sources: ["https://en.wikipedia.org/wiki/Roberto_De_Zerbi"],
+};
+
+export const zidane: Coach = {
+  id: "zidane", name: "지네딘 지단", nameEn: "Zinédine Zidane", tier: "free",
+  status: "무직 (실용+개인 능력 극대화)", nationality: "프랑스", age: 53,
+  formation: "4-3-3", altFormations: ["4-2-3-1"],
+  axes: { possession: 66, pressHeight: 58, tempo: 62, width: 64, verticality: 66, buildFromBack: 62 },
+  requirements: [
+    { key: "creativeAM", weight: 0.8, label: "창조형 핵심" },
+    { key: "boxToBoxCM", weight: 0.72, label: "전후방 연결 8번" },
+    { key: "paceWingers", weight: 0.7, label: "측면 전환" },
+    { key: "mobileStriker", weight: 0.68, label: "침투 9번" },
+    { key: "ballPlayingCB", weight: 0.66, label: "전진 패스 CB" },
+    { key: "holdingDM", weight: 0.66, label: "보호 6번" },
+  ],
+  dna: ["실용주의", "개인 능력 극대화", "유연한 4-3-3"],
+  blurb: "스타들의 개인 능력을 풀어주는 관리형 실용주의. 창의적 핵심이 살아나는 균형 잡힌 모델.",
+  profiled: true, sources: ["https://en.wikipedia.org/wiki/Zinedine_Zidane"],
+};
+
+export const scaloni: Coach = {
+  id: "scaloni", name: "리오넬 스칼로니", nameEn: "Lionel Scaloni", tier: "national",
+  status: "아르헨티나 대표팀 (토너먼트 실용주의)", nationality: "아르헨티나", age: 48,
+  formation: "4-3-3", altFormations: ["4-4-2", "4-2-3-1"],
+  axes: { possession: 60, pressHeight: 62, tempo: 62, width: 62, verticality: 68, buildFromBack: 60 },
+  requirements: [
+    { key: "creativeAM", weight: 0.78, label: "창조형 10번" },
+    { key: "paceWingers", weight: 0.72, label: "스피드 측면" },
+    { key: "boxToBoxCM", weight: 0.72, label: "박스투박스 8번" },
+    { key: "holdingDM", weight: 0.7, label: "균형 6번" },
+    { key: "mobileStriker", weight: 0.68, label: "활동량 9번" },
+    { key: "ballPlayingCB", weight: 0.65, label: "빌드업 CB" },
+  ],
+  dna: ["토너먼트 실용주의", "균형", "경기별 적응"],
+  blurb: "상대·상황에 맞춰 형태를 바꾸는 토너먼트형 실용주의. 균형이 좋아 대부분의 스쿼드와 무난히 맞는다.",
+  profiled: true, sources: ["https://en.wikipedia.org/wiki/Lionel_Scaloni"],
+};
+
 /** Baseline coach (the incumbent everything is measured against). */
 export const BASELINE_COACH = hongMyungbo;
 
@@ -167,6 +293,13 @@ export const coaches: Coach[] = [
   guardiola,
   mourinho,
   xabiAlonso,
+  flick,
+  slot,
+  arteta,
+  simeone,
+  deZerbi,
+  zidane,
+  scaloni,
 ];
 
 /** Candidates only (excludes the incumbent baseline). */

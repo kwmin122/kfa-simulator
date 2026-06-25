@@ -29,6 +29,23 @@ function reasonFor(player: Player, coach: Coach, delta: number): string {
   return `${name} 시스템에서 무난히 제 역할 유지`;
 }
 
+/** A player "thrives" when the coach's identity amplifies their signature trait,
+ *  even if raw usefulness barely moves — the system showcases what they do best. */
+function styleSpotlight(player: Player, coach: Coach): boolean {
+  const a = player.attributes;
+  const ax = coach.axes;
+  const cands: [number, boolean][] = [
+    [a.creativity, ax.possession >= 82],
+    [a.dribbling, ax.possession >= 82 || ax.width >= 78],
+    [a.pace, (ax.verticality + ax.tempo) / 2 >= 76],
+    [a.finishing, ax.verticality >= 70],
+    [a.pressing, ax.pressHeight >= 86],
+  ];
+  // the player's single best of these traits must be both elite (>=82) and lit up
+  const top = cands.slice().sort((x, y) => y[0] - x[0])[0];
+  return top[0] >= 82 && top[1];
+}
+
 export interface VerdictInput {
   coach: Coach;
   baseline: Coach;
@@ -44,14 +61,19 @@ export function playerVerdict(player: Player, inp: VerdictInput): PlayerVerdict 
   const inXi = inp.xiIds.has(player.id);
   const inBaseXi = inp.baselineXiIds.has(player.id);
 
+  const spotlight = inXi && styleSpotlight(player, inp.coach);
+
   let level: VerdictLevel;
   if (!inXi && inBaseXi) level = "benched";
   else if (!inXi) level = "neutral";
-  else if (delta >= 5) level = "thrives";
+  else if (delta >= 5 || spotlight) level = "thrives";
   else if (delta <= -6) level = "sacrificed";
   else level = "neutral";
 
-  return { playerId: player.id, level, delta, reason: reasonFor(player, inp.coach, delta), inXi };
+  const reason = spotlight && delta < 5
+    ? `${inp.coach.dna[0]} 색채가 이 선수의 강점을 전면에 세웁니다`
+    : reasonFor(player, inp.coach, delta);
+  return { playerId: player.id, level, delta, reason, inXi };
 }
 
 /** Focus players + biggest movers (winners & losers), deduped. */
