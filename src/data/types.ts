@@ -138,3 +138,101 @@ export interface SaTag {
     requirements?: RequirementKey[];
   };
 }
+
+// ── Simulation output (the "simulations" entity) ──────────────────────────
+// Produced deterministically by the engine from (coach × squad). This is the
+// contract the UI renders. Every number is a MODEL ESTIMATE, label as such.
+
+/** One filled slot in the best XI. */
+export interface XiSlot {
+  role: Position;
+  player: Player;
+  /** 0–100 how well this player fits this slot in this system. */
+  slotFit: number;
+}
+
+/** Six fit sub-scores driving the radar (0–100). */
+export interface SubScores {
+  buildUp: number;
+  press: number;
+  transition: number;
+  attack: number;
+  defense: number;
+  depth: number;
+}
+
+export type VerdictLevel = "thrives" | "neutral" | "sacrificed" | "benched";
+
+export interface PlayerVerdict {
+  playerId: string;
+  level: VerdictLevel;
+  /** signed delta vs baseline usefulness, for sorting (−100..100). */
+  delta: number;
+  reason: string; // KR, templated from the numbers
+  inXi: boolean;
+}
+
+export interface SaTagResolution {
+  key: SaTagKey;
+  label: string;
+  /** 0–100 how much this coach's system mitigates the problem. */
+  mitigation: number;
+  verdict: "solved" | "improved" | "unchanged"; // ✅ / △ / ❌
+  reason: string; // KR
+}
+
+export type WcRound =
+  | "group"
+  | "round32"
+  | "round16"
+  | "quarter"
+  | "semi"
+  | "final";
+
+export interface WcReach {
+  /** probability mass per round reached (0–1), sums conceptually to 1. */
+  probs: Record<WcRound, number>;
+  /** most likely round + qualitative band. */
+  expected: WcRound;
+  band: "낮음" | "중간" | "높음";
+  /** model probability of escaping the group (0–100). */
+  adv16: number;
+}
+
+/** Estimated expected goals for a neutral WC group match (model estimate). */
+export interface PredictedXg {
+  for: number;
+  against: number;
+}
+
+/** The full simulation result for one coach against the current squad. */
+export interface SimulationResult {
+  coachId: string;
+  squadVersion: string;
+  formation: string;
+  xi: XiSlot[];
+  fitScore: number; // 0–100 overall
+  subScores: SubScores;
+  strengths: string[]; // KR, derived
+  weaknesses: string[]; // KR, derived
+  keyVerdicts: PlayerVerdict[]; // Son / Lee Kang-in / Kim Min-jae + movers
+  saResolution: SaTagResolution[];
+  saCounterfactual: {
+    /** shift in result likelihood vs the actual 0-1 loss. */
+    summary: string; // KR
+    winShift: number; // −100..100 (positive = more likely to avoid defeat)
+  };
+  predictedXg: PredictedXg;
+  wcReach: WcReach;
+  explanation: string; // KR narrative, templated (no AI)
+}
+
+/** Ranking row for the compatibility board. */
+export interface RankingRow {
+  coachId: string;
+  coachName: string;
+  tier: CoachTier;
+  fitScore: number;
+  expected: WcRound;
+  profiled: boolean;
+}

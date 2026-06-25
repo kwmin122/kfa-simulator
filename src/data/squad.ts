@@ -9,6 +9,9 @@ import type { Player } from "./types";
 // Ages as of June 2026 (approx, from birth year). See /methodology.
 // ──────────────────────────────────────────────────────────────────────────
 
+/** Bump when the roster or ratings change, so cached simulations are versioned. */
+export const SQUAD_VERSION = "2026-WC-26man.v1";
+
 export const SQUAD_SOURCES = [
   "https://worldcuppass.com/south-korea-world-cup-squad-2026/",
   "https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/korea-republic-world-cup-squad-hong-myungbo",
