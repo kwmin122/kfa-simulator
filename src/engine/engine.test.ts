@@ -77,4 +77,47 @@ test("Hong scores LOW on weakness-fix and core usage (NOT a forced last place)",
   assert.ok(hong.axes.coreImpact <= avgCore, "Hong should use the core players no better than the field average");
 });
 
+// ── Phase 1.5: profile audit gate ──────────────────────────────────────────
+const REPORTED_SHORTLIST = ["marsch", "seabra", "casas", "gunes", "lage", "monk"];
+
+test("status and provenance.currentJob don't contradict on 무직", () => {
+  for (const c of coaches) {
+    assert.equal(c.status.includes("무직"), c.provenance.currentJob.includes("무직"), `${c.id} status/currentJob 무직 mismatch`);
+  }
+});
+
+test("confidence 'high' never relies on wiki/namu alone", () => {
+  for (const c of coaches) {
+    if (c.provenance.confidence === "high") {
+      const onlyWiki = c.sources.every((s) => /wikipedia|namu\.wiki/.test(s));
+      assert.ok(!onlyWiki && c.sources.length >= 2, `${c.id} high confidence needs ≥2 solid (non-wiki) sources`);
+    }
+  }
+});
+
+test("reported 2024 shortlist coaches are marked 보도 in note", () => {
+  for (const id of REPORTED_SHORTLIST) {
+    const c = coaches.find((x) => x.id === id)!;
+    assert.ok(c.provenance.note?.includes("보도"), `${id} must be marked as reported (보도)`);
+  }
+});
+
+test("media/meme coaches are confidence low", () => {
+  for (const c of coaches) {
+    if (c.meme || c.tier === "media") assert.equal(c.provenance.confidence, "low", `${c.id} meme/media must be low confidence`);
+  }
+});
+
+test("headline leads with a positive (never with risk); baseline is the failing 기준선", () => {
+  const hong = byId("hong-myungbo");
+  assert.ok(hong.headline.includes("기준선") || hong.headline.includes("위기"));
+  const m = byId("marsch");
+  assert.ok(!m.headline.startsWith("제시 마치가 오면 한국은 뒷공간"), "headline must not lead with risk");
+});
+
+test("Hong baseline is 3-back (3-4-3) per the SA-match lineup", () => {
+  const hong = coaches.find((c) => c.id === "hong-myungbo")!;
+  assert.equal(hong.formation, "3-4-3");
+});
+
 void marsch;

@@ -12,24 +12,41 @@ function lineRisk(coach: Coach, style: TeamStyle): number {
   return Math.round(Math.min(100, Math.max(0, coach.axes.pressHeight * 0.6 + (100 - style.defense) * 0.4)));
 }
 
-/** Team-style change vs the Hong baseline — the star of the result screen. */
+/** 사용자 기대 "공격성" = 지공 자원 + 전환 + 압박 (지공 생산력만 보면 직관과 충돌). */
+const threatOf = (s: TeamStyle) => Math.round((s.attack + s.transition + s.press) / 3);
+
+/** Team-style change vs the Hong baseline — the star of the result screen.
+ *  Note: teamStyle.attack ≈ "지공 생산성"(개인 공격 자원), 전환/압박은 별도. 사용자가
+ *  체감하는 공격성은 threat(공격 위협도)로 묶어서 보여준다. */
 function buildBaselineDelta(coach: Coach, style: TeamStyle, baseStyle: TeamStyle, baseLineRisk: number): StyleDelta[] {
   const deltas: StyleDelta[] = [
+    { key: "threat", label: "공격 위협도", delta: threatOf(style) - threatOf(baseStyle), good: true },
     { key: "press", label: "전방 압박", delta: style.press - baseStyle.press, good: true },
-    { key: "transition", label: "공격 속도", delta: style.transition - baseStyle.transition, good: true },
-    { key: "attack", label: "공격 생산력", delta: style.attack - baseStyle.attack, good: true },
+    { key: "transition", label: "빠른 전환", delta: style.transition - baseStyle.transition, good: true },
     { key: "buildUp", label: "빌드업 안정", delta: style.buildUp - baseStyle.buildUp, good: true },
+    { key: "attack", label: "지공 생산성", delta: style.attack - baseStyle.attack, good: true },
     { key: "control", label: "경기 장악", delta: style.control - baseStyle.control, good: true },
     { key: "lineRisk", label: "뒷공간 리스크", delta: lineRisk(coach, style) - baseLineRisk, good: false },
   ];
   return deltas.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
 }
 
-function buildHeadline(coach: Coach, fit: number, deltas: StyleDelta[]): string {
-  const top = deltas[0];
-  const dir = top.delta >= 0 ? `${top.label} ↑` : `${top.label} ↓`;
+/** Headline: POSITIVE style changes first, caveat second. Never lead with risk. */
+function buildHeadline(coach: Coach, fit: number, deltas: StyleDelta[], isBaseline: boolean): string {
+  if (isBaseline) {
+    return "현재 기준선 — 남아공전 0-1 패, 조별 탈락 위기. 개인 공격 자원은 좋지만 3백 고집과 느린 전환으로 손흥민·이강인·황희찬의 장점이 한 화면에 묶이지 못합니다.";
+  }
+  const positives = deltas.filter((d) => d.good && d.delta >= 4).sort((a, b) => b.delta - a.delta);
+  const caveat = deltas
+    .filter((d) => (!d.good && d.delta >= 6) || (d.good && d.delta <= -6))
+    .sort((a, b) => (b.good ? -b.delta : b.delta) - (a.good ? -a.delta : a.delta))[0];
   const fitWord = fit >= 80 ? "최적의 궁합" : fit >= 70 ? "좋은 궁합" : fit >= 60 ? "보통 궁합" : "마찰이 큰 궁합";
-  return `${coach.name}가 오면 홍명보 대비 ${dir}${Math.abs(top.delta) >= 8 ? `(${top.delta >= 0 ? "+" : ""}${top.delta})` : ""} — 현 스쿼드와는 ${fitWord}(${fit}).`;
+
+  let s = positives.length
+    ? `${coach.name}가 오면 한국은 ${positives.slice(0, 2).map((p) => p.label).join("·")}에서 확 살아납니다`
+    : `${coach.name}가 와도 홍명보 대비 스타일 변화는 크지 않습니다`;
+  if (caveat) s += `. 단, ${caveat.label}는 ${!caveat.good ? "크게 커집니다" : "줄어듭니다"}`;
+  return `${s} — 현 스쿼드와 ${fitWord}(${fit}).`;
 }
 
 export function simulate(coach: Coach, squad: Player[], baseline: Coach): SimulationResult {
@@ -50,10 +67,11 @@ export function simulate(coach: Coach, squad: Player[], baseline: Coach): Simula
 
   const { predictedXg, wcReach } = project(fit.fitScore, style);
   const wcScenarios = scenarios(wcReach);
+  const isBaseline = coach.id === baseline.id;
   const baselineDelta = buildBaselineDelta(coach, style, baseStyle, baseLineRisk);
-  const headline = buildHeadline(coach, fit.fitScore, baselineDelta);
+  const headline = buildHeadline(coach, fit.fitScore, baselineDelta, isBaseline);
 
-  const explanation = narrate({ coach, fit: fit.fitScore, axes: fit.axes, style, keyVerdicts: verdicts, counterfactual: cf, wcReach });
+  const explanation = narrate({ coach, fit: fit.fitScore, axes: fit.axes, style, keyVerdicts: verdicts, counterfactual: cf, wcReach, isBaseline });
 
   return {
     coachId: coach.id, squadVersion: SQUAD_VERSION, formation, xi,

@@ -1,32 +1,38 @@
 import type { Coach } from "./types";
 
 // ──────────────────────────────────────────────────────────────────────────
-// Coach profiles (v2). Each carries: tactical axes + squad requirements (for
-// "전술 수행"), intangibles (for "월드컵 단기전"), and realism (for "현실 리스크").
-// Style/intangible numbers are estimates from public tactical analysis.
-// Current jobs verified per source where possible. This is the verification
-// SLICE (Phase A); the full Korea-relevant pool is added in Phase B.
+// Coach profiles. Each carries: tactical axes + squad requirements (전술 수행),
+// intangibles (단기전), and a `provenance` evidence layer (현직·확인일·신뢰도).
+// REALISM is NOT scored — only the 4 fit axes matter; provenance is for trust.
+// confidence "high" only when ≥2 solid sources (공식/주요 언론); 위키/나무 단독은 medium.
+// Current jobs verified via WebSearch (2026-06). Style numbers are estimates
+// from public tactical analysis. 2024 reported shortlist = confidence medium/low.
 // ──────────────────────────────────────────────────────────────────────────
 
 export const hongMyungbo: Coach = {
   id: "hong-myungbo", name: "홍명보", nameEn: "Hong Myung-bo", tier: "national",
-  status: "현 대한민국 감독 (2024.7~)", nationality: "대한민국", age: 56,
-  formation: "4-2-3-1", altFormations: ["4-4-2"],
-  axes: { possession: 55, pressHeight: 45, tempo: 50, width: 52, verticality: 48, buildFromBack: 56 },
+  status: "현 대한민국 감독 (남아공전 3-4-3 가동)", nationality: "대한민국", age: 56,
+  formation: "3-4-3", altFormations: ["3-4-2-1"], // 3백 고집 — 4백으로 안 바꿈
+  axes: { possession: 56, pressHeight: 46, tempo: 48, width: 58, verticality: 44, buildFromBack: 54 },
   requirements: [
     { key: "creativeAM", weight: 0.7, label: "창의적 10번(이강인 의존)" },
+    { key: "overlappingFB", weight: 0.6, label: "윙백 폭(3백 의존)" },
     { key: "mobileStriker", weight: 0.55, label: "활동량형 9번" },
     { key: "ballPlayingCB", weight: 0.5, label: "빌드업 CB" },
-    { key: "boxToBoxCM", weight: 0.5, label: "박스투박스 중원" },
   ],
-  intangibles: { complexity: 36, planB: 24, tournamentXP: 50, defensiveStability: 48, starManagement: 32 },
-  provenance: { currentJob: "현 대한민국 대표팀 감독 (2024.7~)", availability: "재임 중 (남아공전 패배로 거취 압박)", sourceUrl: "https://namu.wiki/w/홍명보호(성인 2기)", lastCheckedAt: "2026-06-26", confidence: "high" },
-  dna: ["실리적 4-2-3-1", "개인 능력 의존", "반응형 블록", "로테이션 운영"],
+  intangibles: { complexity: 38, planB: 22, tournamentXP: 50, defensiveStability: 48, starManagement: 30 },
+  provenance: { currentJob: "현 대한민국 대표팀 감독 (2024.7~)", availability: "재임 중 (남아공전 패배로 거취 압박)", sourceUrl: "https://www.olympics.com/ko/news/football-korea-south-africa-fifa-world-cup-2026", lastCheckedAt: "2026-06-26", confidence: "high", note: "남아공전 공식 라인업 3-4-3 (김승규; 이한범·김민재·이기혁; 설영우·황인범·백승호·이태석; 이강인·오현규·황희찬)." },
+  dna: ["3백 고집", "윙백 의존", "로테이션 리스크", "개인 능력 의존"],
   blurb:
-    "안정·실리 우선의 반응형 운영. 고정된 압박 트리거와 빠른 전환 메커니즘이 없어, 막히면 대안이 " +
-    "약하다. 남아공전에서는 손흥민·이재성을 벤치에 두는 로테이션과 느린 빌드업이 역효과로 지목됐다.",
+    "남아공전 기준 홍명보호는 3-4-3을 가동했고, 손흥민·이재성을 벤치에 둔 로테이션과 3백 유지가 " +
+    "비판받았다. 점유는 했지만 마지막 1/3 창의성, 박스 위협, 경기 중 전술 전환이 부족했다. 개인 " +
+    "공격 자원은 좋지만 3백 유지와 느린 전환 때문에 손흥민·이강인·황희찬의 장점이 한 화면에 묶이지 못한다.",
   profiled: true,
-  sources: ["https://namu.wiki/w/홍명보호(성인 2기)", "https://www.olympics.com/ko/news/football-korea-south-africa-fifa-world-cup-2026"],
+  sources: [
+    "https://www.olympics.com/ko/news/football-korea-south-africa-fifa-world-cup-2026",
+    "https://www.newspim.com/news/view/20260625000748",
+    "https://www.fifa.com/ko/articles/what-korea-republic-learned-from-losing-to-south-africa-2026-ko",
+  ],
 };
 
 export const bento: Coach = {
@@ -43,7 +49,7 @@ export const bento: Coach = {
     { key: "overlappingFB", weight: 0.66, label: "전진 풀백" },
   ],
   intangibles: { complexity: 60, planB: 50, tournamentXP: 82, defensiveStability: 62, starManagement: 80 },
-  provenance: { currentJob: "무직 (전 대한민국·UAE 대표팀)", availability: "선임 가능", sourceUrl: "https://en.wikipedia.org/wiki/Paulo_Bento", lastCheckedAt: "2026-06-26", confidence: "high" },
+  provenance: { currentJob: "무직 (전 대한민국·UAE 대표팀)", availability: "선임 가능", sourceUrl: "https://en.wikipedia.org/wiki/Paulo_Bento", lastCheckedAt: "2026-06-26", confidence: "medium" },
   dna: ["후방 빌드업", "점유 구조", "일관된 시스템"],
   blurb:
     "후방 빌드업과 점유 구조로 팀에 명확한 색을 입힌 전임자. 황인범을 중심으로 한 탈압박 빌드업이 " +
@@ -64,7 +70,7 @@ export const klinsmann: Coach = {
     { key: "creativeAM", weight: 0.45, label: "스타 의존 창조" },
   ],
   intangibles: { complexity: 22, planB: 18, tournamentXP: 68, defensiveStability: 28, starManagement: 62 },
-  provenance: { currentJob: "무직 (2024.2 대한민국 경질)", availability: "선임 가능", sourceUrl: "https://en.wikipedia.org/wiki/Jürgen_Klinsmann", lastCheckedAt: "2026-06-26", confidence: "high" },
+  provenance: { currentJob: "무직 (2024.2 대한민국 경질)", availability: "선임 가능", sourceUrl: "https://en.wikipedia.org/wiki/Jürgen_Klinsmann", lastCheckedAt: "2026-06-26", confidence: "medium" },
   dna: ["무전술 논란", "개인 능력 의존", "자율 방임"],
   blurb:
     "뚜렷한 전술 구조 없이 개인 능력에 의탁한다는 비판을 받은 전임자. 압박 트리거·빌드업 구조가 " +
@@ -87,7 +93,7 @@ export const moriyasu: Coach = {
     { key: "boxToBoxCM", weight: 0.7, label: "박스투박스" },
   ],
   intangibles: { complexity: 56, planB: 76, tournamentXP: 86, defensiveStability: 70, starManagement: 78 },
-  provenance: { currentJob: "일본 대표팀 감독", availability: "일본과 계약 중", sourceUrl: "https://en.wikipedia.org/wiki/Hajime_Moriyasu", lastCheckedAt: "2026-06-26", confidence: "high" },
+  provenance: { currentJob: "일본 대표팀 감독", availability: "일본과 계약 중", sourceUrl: "https://en.wikipedia.org/wiki/Hajime_Moriyasu", lastCheckedAt: "2026-06-26", confidence: "medium" },
   dna: ["유연한 3/4백", "관리형 압박+전환", "토너먼트 실용"],
   blurb:
     "백3·백4를 오가는 유연함과 강한 토너먼트 결과(독일·스페인 격파, 16강 2회). 관리형 안정성과 " +
@@ -110,7 +116,7 @@ export const klopp: Coach = {
     { key: "mobileStriker", weight: 0.75, label: "압박 가담 9번" },
   ],
   intangibles: { complexity: 70, planB: 60, tournamentXP: 55, defensiveStability: 60, starManagement: 82 },
-  provenance: { currentJob: "레드불 글로벌 축구 총괄", availability: "사실상 불가", sourceUrl: "https://en.wikipedia.org/wiki/Jürgen_Klopp", lastCheckedAt: "2026-06-26", confidence: "high" },
+  provenance: { currentJob: "레드불 글로벌 축구 총괄", availability: "사실상 불가", sourceUrl: "https://en.wikipedia.org/wiki/Jürgen_Klopp", lastCheckedAt: "2026-06-26", confidence: "medium" },
   dna: ["게겐프레싱", "수직 전환", "헤비메탈"],
   blurb:
     "잃는 즉시 재탈취하는 게겐프레싱과 폭발적 전환. 손흥민·황희찬·김민재의 강점을 전면에 세우지만, " +
@@ -120,8 +126,8 @@ export const klopp: Coach = {
 };
 
 export const mourinho: Coach = {
-  id: "mourinho", name: "조제 무리뉴", nameEn: "José Mourinho", tier: "free",
-  status: "무직 (전 첼시·레알·로마·페네르바체)", rumor: "실리·빅매치. 김민재 버프, 이강인은 애매.",
+  id: "mourinho", name: "조제 무리뉴", nameEn: "José Mourinho", tier: "club",
+  status: "레알 마드리드 감독 (2026.6 부임)", rumor: "실리·빅매치. 김민재 버프, 이강인은 애매. (재미용 가정)",
   nationality: "포르투갈", age: 63,
   formation: "4-2-3-1", altFormations: ["4-3-3", "5-3-2"],
   axes: { possession: 32, pressHeight: 34, tempo: 60, width: 54, verticality: 80, buildFromBack: 36 },
@@ -133,13 +139,13 @@ export const mourinho: Coach = {
     { key: "targetStriker", weight: 0.6, label: "연계 타깃맨" },
   ],
   intangibles: { complexity: 54, planB: 70, tournamentXP: 78, defensiveStability: 88, starManagement: 64 },
-  provenance: { currentJob: "무직 (전 페네르바체)", availability: "선임 가능", sourceUrl: "https://en.wikipedia.org/wiki/José_Mourinho", lastCheckedAt: "2026-06-26", confidence: "high" },
+  provenance: { currentJob: "레알 마드리드 감독 (2026.6.11 부임, 전 벤피카·페네르바체)", availability: "레알과 계약 (사실상 불가)", sourceUrl: "https://www.realmadrid.com/en-US/news/club/latest-news/comunicado-oficial-mourinho-11-06-2026", lastCheckedAt: "2026-06-26", confidence: "high", note: "2026.6.9 벤피카 떠나 6.11 레알 마드리드 공식 부임(3년)." },
   dna: ["로우블록", "빠른 역습", "수비 조직"],
   blurb:
     "내려서서 단단히 막고 한 방으로 끝낸다. 빠른 측면 자원이 많은 현 스쿼드와 역습 궁합이 좋고 " +
     "수비 안정성·빅매치 경험이 단기전에 강하지만, 점유가 적어 이강인 활용은 애매하다.",
   profiled: true,
-  sources: ["https://en.wikipedia.org/wiki/José_Mourinho"],
+  sources: ["https://www.realmadrid.com/en-US/news/club/latest-news/comunicado-oficial-mourinho-11-06-2026", "https://www.espn.com/soccer/story/_/id/48814292/jose-mourinho-real-madrid-coach-alvaro-arbeloa"],
 };
 
 // ── Phase B: Korea-relevant pool (찌라시 + 분석적으로 재밌는 감독) ──────────
@@ -157,7 +163,7 @@ export const shinTaeyong: Coach = {
     { key: "creativeAM", weight: 0.65, label: "10번 창조" },
   ],
   intangibles: { complexity: 48, planB: 72, tournamentXP: 80, defensiveStability: 58, starManagement: 70 },
-  provenance: { currentJob: "페르시자 자카르타 감독 (2026.6~)", availability: "클럽 계약 중", sourceUrl: "https://namu.wiki/w/신태용", lastCheckedAt: "2026-06-26", confidence: "high" },
+  provenance: { currentJob: "페르시자 자카르타 감독 (2026.6~)", availability: "클럽 계약 중", sourceUrl: "https://namu.wiki/w/신태용", lastCheckedAt: "2026-06-26", confidence: "medium" },
   dna: ["한국형 토너먼트", "역습·세트피스", "변칙 전술"],
   blurb: "강팀 상대 변칙과 세트피스, 빠른 역습으로 한 방을 노리는 한국형 토너먼트 운영. 2018 독일전 승리와 인도네시아에서의 성과로 단기전 변별력이 강점.",
   profiled: true, sources: ["https://namu.wiki/w/신태용"],
@@ -177,7 +183,7 @@ export const potter: Coach = {
     { key: "holdingDM", weight: 0.68, label: "조율 6번" },
   ],
   intangibles: { complexity: 70, planB: 72, tournamentXP: 55, defensiveStability: 64, starManagement: 72 },
-  provenance: { currentJob: "스웨덴 대표팀 감독 (2025.10~)", availability: "2030까지 스웨덴 계약", contractUntil: "2030", sourceUrl: "https://en.wikipedia.org/wiki/Graham_Potter", lastCheckedAt: "2026-06-26", confidence: "high" },
+  provenance: { currentJob: "스웨덴 대표팀 감독 (2025.10~)", availability: "2030까지 스웨덴 계약", contractUntil: "2030", sourceUrl: "https://en.wikipedia.org/wiki/Graham_Potter", lastCheckedAt: "2026-06-26", confidence: "medium" },
   dna: ["포지셔널 유연성", "3-4-2-1 가변", "약팀 극대화"],
   blurb: "백3·백4를 오가는 유연한 포지셔널로 개개인을 살리는 전술가. 이강인·김민재 활용 상상엔 좋지만, 2030까지 스웨덴과 계약돼 현실성은 낮다.",
   profiled: true, sources: ["https://en.wikipedia.org/wiki/Graham_Potter"],
@@ -197,7 +203,7 @@ export const scaloni: Coach = {
     { key: "mobileStriker", weight: 0.68, label: "활동량 9번" },
   ],
   intangibles: { complexity: 50, planB: 80, tournamentXP: 95, defensiveStability: 72, starManagement: 85 },
-  provenance: { currentJob: "아르헨티나 대표팀 감독", availability: "계약 중", sourceUrl: "https://en.wikipedia.org/wiki/Lionel_Scaloni", lastCheckedAt: "2026-06-26", confidence: "high" },
+  provenance: { currentJob: "아르헨티나 대표팀 감독", availability: "계약 중", sourceUrl: "https://en.wikipedia.org/wiki/Lionel_Scaloni", lastCheckedAt: "2026-06-26", confidence: "medium" },
   dna: ["토너먼트 밸런스", "스타 관리", "실용 4-3-3"],
   blurb: "월드컵 우승으로 증명된 토너먼트 밸런스와 스타 관리. 경기별 적응과 플랜 B가 단기전에 최적이지만 한국행 현실성은 거의 없다.",
   profiled: true, sources: ["https://en.wikipedia.org/wiki/Lionel_Scaloni"],
@@ -217,7 +223,7 @@ export const deschamps: Coach = {
     { key: "creativeAM", weight: 0.66, label: "스타 창조" },
   ],
   intangibles: { complexity: 45, planB: 78, tournamentXP: 95, defensiveStability: 82, starManagement: 80 },
-  provenance: { currentJob: "프랑스 대표팀 감독 (2026 이후 이임 예정)", availability: "2026 이후 가능", sourceUrl: "https://en.wikipedia.org/wiki/Didier_Deschamps", lastCheckedAt: "2026-06-26", confidence: "high" },
+  provenance: { currentJob: "프랑스 대표팀 감독 (2026 이후 이임 예정)", availability: "2026 이후 가능", sourceUrl: "https://en.wikipedia.org/wiki/Didier_Deschamps", lastCheckedAt: "2026-06-26", confidence: "medium" },
   dna: ["실리축구", "스타 활용", "월드컵 DNA"],
   blurb: "화려함보다 결과. 견고한 수비 위에 개인 능력을 푸는 월드컵형 실용주의로 단기전 안정성이 최상급이다.",
   profiled: true, sources: ["https://en.wikipedia.org/wiki/Didier_Deschamps"],
@@ -237,7 +243,7 @@ export const enrique: Coach = {
     { key: "holdingDM", weight: 0.8, label: "조율 6번" },
   ],
   intangibles: { complexity: 75, planB: 60, tournamentXP: 80, defensiveStability: 66, starManagement: 74 },
-  provenance: { currentJob: "파리 생제르맹 감독", availability: "클럽 계약 중", sourceUrl: "https://en.wikipedia.org/wiki/Luis_Enrique", lastCheckedAt: "2026-06-26", confidence: "high" },
+  provenance: { currentJob: "파리 생제르맹 감독", availability: "클럽 계약 중", sourceUrl: "https://en.wikipedia.org/wiki/Luis_Enrique", lastCheckedAt: "2026-06-26", confidence: "medium" },
   dna: ["점유 지배", "전방 압박", "후방 빌드업"],
   blurb: "극단적 점유와 전방 압박. 발밑 좋은 후방이 전제라 빠르지만 빌드업이 정교하지 않은 현 스쿼드와는 마찰이 크다.",
   profiled: true, sources: ["https://en.wikipedia.org/wiki/Luis_Enrique"],
@@ -257,7 +263,7 @@ export const bielsa: Coach = {
     { key: "pressResistantMF", weight: 0.7, label: "탈압박" },
   ],
   intangibles: { complexity: 85, planB: 30, tournamentXP: 65, defensiveStability: 50, starManagement: 60 },
-  provenance: { currentJob: "우루과이 대표팀 감독", availability: "계약 중", sourceUrl: "https://en.wikipedia.org/wiki/Marcelo_Bielsa", lastCheckedAt: "2026-06-26", confidence: "high" },
+  provenance: { currentJob: "우루과이 대표팀 감독", availability: "계약 중", sourceUrl: "https://en.wikipedia.org/wiki/Marcelo_Bielsa", lastCheckedAt: "2026-06-26", confidence: "medium" },
   dna: ["극단적 압박", "맨마킹", "하드러닝"],
   blurb: "전원 맨마킹과 미친 활동량의 비엘사 볼. 스쿼드 체력의 한계를 시험하며, 살아나면 폭발하지만 터지면 무너지는 양날의 검.",
   profiled: true, sources: ["https://en.wikipedia.org/wiki/Marcelo_Bielsa"],
@@ -403,13 +409,13 @@ export const marsch: Coach = {
   blurb:
     "레드불 사단의 저돌적 게겐프레스. 고정 9번·6번 없이 측면·중앙을 오가는 2선 자원으로 좁은 블록을 만들어 압박한다. " +
     "손흥민·황희찬·이강인·이재성 등 2선이 풍부하고 하이라인을 김민재가 커버하는 현 스쿼드와 궁합이 좋다. 단, 밸런스 붕괴로 역습 실점이 약점.",
-  profiled: true, sources: ["https://en.wikipedia.org/wiki/Jesse_Marsch"],
-  provenance: { currentJob: "캐나다 대표팀 감독", availability: "사실상 불가 (캐나다 2030 재계약)", contractUntil: "2030", sourceUrl: "https://en.wikipedia.org/wiki/Jesse_Marsch", lastCheckedAt: "2026-06-26", confidence: "medium", note: "2024 보도 기준 한국 1순위. 현재는 캐나다 감독이며 이번 월드컵 32강 잠재 상대." },
+  profiled: true, sources: ["https://www.espn.com/soccer/story/_/id/48885028/canada-coach-jesse-marsch-new-contract-world-cup", "https://en.wikipedia.org/wiki/Jesse_Marsch"],
+  provenance: { currentJob: "캐나다 대표팀 감독 (2030까지 재계약)", availability: "사실상 불가 (캐나다 계약)", contractUntil: "2030", sourceUrl: "https://www.espn.com/soccer/story/_/id/48885028/canada-coach-jesse-marsch-new-contract-world-cup", lastCheckedAt: "2026-06-26", confidence: "medium", note: "2024 보도 기준 한국 1순위(세금협상 결렬). 현재는 캐나다 감독이며 이번 월드컵 32강 잠재 상대." },
 };
 
 export const seabra: Coach = {
   id: "seabra", name: "바스코 세아브라", nameEn: "Vasco Seabra", tier: "club",
-  status: "에스토릴 감독 (보도: 2024 후보군)",
+  status: "FC 아로카 감독 (포르투갈, 보도: 2024 후보군)",
   rumor: "'포르투갈 뱅거' 학자형 데이터 감독. 보도로 거론됐으나 대표팀·메이저 무경험.",
   nationality: "포르투갈", age: 43,
   formation: "4-2-3-1", altFormations: ["4-3-3"],
@@ -425,12 +431,12 @@ export const seabra: Coach = {
   dna: ["데이터형 포지셔널", "후방 빌드업", "분석 기반"],
   blurb: "미터 단위로 라인을 쪼개는 학자형 데이터 감독. 정교한 빌드업이 매력이지만 대표팀·토너먼트 경험이 거의 없는 게 약점.",
   profiled: true, sources: ["https://en.wikipedia.org/wiki/Vasco_Seabra"],
-  provenance: { currentJob: "에스토릴(포르투갈) 감독", availability: "클럽 계약 중", sourceUrl: "https://en.wikipedia.org/wiki/Vasco_Seabra", lastCheckedAt: "2026-06-26", confidence: "low", note: "2024 보도/영상 기반 후보군. 신뢰도 낮음." },
+  provenance: { currentJob: "FC 아로카(포르투갈) 감독", availability: "클럽 계약 중", sourceUrl: "https://www.playmakerstats.com/manager/vasco-seabra/15841", lastCheckedAt: "2026-06-26", confidence: "low", note: "2024 보도/영상 기반 후보군. 현직은 아로카(에스토릴 아님)." },
 };
 
 export const casas: Coach = {
-  id: "casas", name: "헤수스 카사스", nameEn: "Jesús Casas", tier: "national",
-  status: "이라크 대표팀 감독 (보도: 2024 후보군)",
+  id: "casas", name: "헤수스 카사스", nameEn: "Jesús Casas", tier: "club",
+  status: "라이언 시티 세일러스 감독 (싱가포르, 보도: 2024 후보군)",
   rumor: "전 바르사 스카우트·엔리케 사단. 아시안컵 인상적이었으나 같은 AFC 이라크와 계약.",
   nationality: "스페인", age: 51,
   formation: "4-3-3", altFormations: ["4-2-3-1"],
@@ -446,12 +452,12 @@ export const casas: Coach = {
   dna: ["스페인식 점유", "빌드업", "조직"],
   blurb: "바르사 스카우트·스페인 대표팀 코치 출신의 점유 지향 감독. 아시안컵에서 이라크로 인상적 결과를 냈지만 AFC 동일 권역이라 영입 난도가 높다.",
   profiled: true, sources: ["https://en.wikipedia.org/wiki/Jes%C3%BAs_Casas"],
-  provenance: { currentJob: "이라크 대표팀 감독", availability: "이라크와 계약 중 (~2026)", contractUntil: "2026", sourceUrl: "https://en.wikipedia.org/wiki/Jes%C3%BAs_Casas", lastCheckedAt: "2026-06-26", confidence: "medium", note: "2024 보도/영상 기반 후보군." },
+  provenance: { currentJob: "라이언 시티 세일러스(싱가포르) 감독 (~2027/28)", availability: "클럽 계약 중", contractUntil: "2028", sourceUrl: "https://www.lioncitysailorsfc.sg/lion-city-sailors-appoint-jesus-casas-as-head-coach/", lastCheckedAt: "2026-06-26", confidence: "medium", note: "2024 보도 기준 한국 후보군 거론. 현직은 라이언 시티 세일러스(이라크 아님)." },
 };
 
 export const gunes: Coach = {
   id: "gunes", name: "셰놀 귀네슈", nameEn: "Şenol Güneş", tier: "free",
-  status: "무직 (보도: 2024 후보군)",
+  status: "트라브존스포르 풋볼 디렉터 (보도: 2024 후보군)",
   rumor: "2002 월드컵 3위(튀르키예)의 노장. 미팅했으나 뚜렷한 전술 모델 어필은 약했다는 평.",
   nationality: "튀르키예", age: 73,
   formation: "4-2-3-1", altFormations: ["4-4-2"],
@@ -467,12 +473,12 @@ export const gunes: Coach = {
   dna: ["노장 경험", "안정 지향", "토너먼트 관록"],
   blurb: "2002 월드컵 3위의 관록. 큰 경험치는 분명하지만 고령에 뚜렷한 전술 모델 제시가 약했다는 평가가 있다.",
   profiled: true, sources: ["https://en.wikipedia.org/wiki/%C5%9Eenol_G%C3%BCne%C5%9F"],
-  provenance: { currentJob: "무직 (전 튀르키예 대표팀)", availability: "선임 가능", sourceUrl: "https://en.wikipedia.org/wiki/%C5%9Eenol_G%C3%BCne%C5%9F", lastCheckedAt: "2026-06-26", confidence: "low", note: "2024 보도/영상 기반 후보군." },
+  provenance: { currentJob: "트라브존스포르 풋볼 디렉터 (전 튀르키예 대표팀)", availability: "디렉터직 — 감독 부임은 별개", sourceUrl: "https://en.wikipedia.org/wiki/%C5%9Eenol_G%C3%BCne%C5%9F", lastCheckedAt: "2026-06-26", confidence: "low", note: "2024 보도/영상 기반 후보군. 현재 무직 아님(클럽 디렉터)." },
 };
 
 export const lage: Coach = {
   id: "lage", name: "브루누 라즈", nameEn: "Bruno Lage", tier: "free",
-  status: "무직 (보도: 2024 +2 후보군)",
+  status: "무직 (전 벤피카, 2025 종료 · 보도: 2024 +2 후보군)",
   rumor: "황희찬과 울버햄튼 인연. 연봉이 높고 유럽 잔류 가능성이 커 현실성은 낮은 편이라는 평.",
   nationality: "포르투갈", age: 50,
   formation: "4-3-3", altFormations: ["4-2-3-1"],
@@ -488,7 +494,7 @@ export const lage: Coach = {
   dna: ["균형형 4-3-3", "전환", "클럽 검증"],
   blurb: "벤피카·울버햄튼을 거친 균형형 감독. 황희찬과의 인연이 있지만 대표팀 경험이 없고 영입 비용이 변수.",
   profiled: true, sources: ["https://en.wikipedia.org/wiki/Bruno_Lage"],
-  provenance: { currentJob: "무직 (전 벤피카·울버햄튼)", availability: "선임 가능 (연봉 변수)", sourceUrl: "https://en.wikipedia.org/wiki/Bruno_Lage", lastCheckedAt: "2026-06-26", confidence: "low", note: "2024 보도 +2 후보군." },
+  provenance: { currentJob: "무직 — 마지막 벤피카(2024~2025), 이후 무리뉴가 후임", availability: "선임 가능 (연봉 변수)", sourceUrl: "https://en.wikipedia.org/wiki/Bruno_Lage", lastCheckedAt: "2026-06-26", confidence: "low", note: "2024 보도 +2 후보군. 현재 무직." },
 };
 
 export const monk: Coach = {
@@ -508,7 +514,7 @@ export const monk: Coach = {
   dna: ["영국식 균형", "조직", "하락세"],
   blurb: "스완지 시절 인상적이었으나 이후 커리어가 하락세. 대표팀 레벨로는 부족하다는 평가가 많은 +2 후보.",
   profiled: true, sources: ["https://en.wikipedia.org/wiki/Garry_Monk"],
-  provenance: { currentJob: "무직/하위 리그 (전 스완지 등)", availability: "선임 가능", sourceUrl: "https://en.wikipedia.org/wiki/Garry_Monk", lastCheckedAt: "2026-06-26", confidence: "low", note: "2024 보도 +2 후보군. 신뢰도 낮음." },
+  provenance: { currentJob: "무직 — 마지막 케임브리지 Utd, 2025.2 퇴임", availability: "선임 가능", sourceUrl: "https://en.wikipedia.org/wiki/Garry_Monk", lastCheckedAt: "2026-06-26", confidence: "low", note: "2024 보도 +2 후보군. 현재 무직(전 케임브리지)." },
 };
 
 export const BASELINE_COACH = hongMyungbo;

@@ -21,7 +21,7 @@ export const STYLE_LABEL: Record<keyof TeamStyle, string> = {
   buildUp: "빌드업",
   press: "압박",
   transition: "전환",
-  attack: "공격",
+  attack: "지공 생산",
   defense: "수비",
   control: "장악",
 };

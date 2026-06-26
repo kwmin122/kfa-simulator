@@ -213,7 +213,7 @@ export interface PredictedXg {
 
 /** A team-style change vs the Hong baseline — the star of the result screen. */
 export interface StyleDelta {
-  key: keyof TeamStyle | "lineRisk";
+  key: keyof TeamStyle | "lineRisk" | "threat";
   label: string;       // KR, e.g. "전방 압박"
   delta: number;       // signed change vs Hong
   good: boolean;       // is an increase good? (lineRisk: increase = bad)

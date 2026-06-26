@@ -3,7 +3,7 @@ import { ROUND_LABEL } from "./projection";
 
 const STYLE_LABEL: Record<keyof TeamStyle, string> = {
   buildUp: "후방 빌드업", press: "전방 압박", transition: "역습 전환",
-  attack: "공격 생산력", defense: "수비 안정", control: "경기 장악",
+  attack: "지공 생산", defense: "수비 안정", control: "경기 장악",
 };
 
 const AXIS_LABEL: Record<keyof FitAxes, string> = {
@@ -24,6 +24,7 @@ export function deriveStrengthsWeaknesses(style: TeamStyle): { strengths: string
 export interface NarrateInput {
   coach: Coach; fit: number; axes: FitAxes; style: TeamStyle;
   keyVerdicts: PlayerVerdict[]; counterfactual: { summary: string }; wcReach: WcReach;
+  isBaseline?: boolean;
 }
 
 export function narrate(inp: NarrateInput): string {
@@ -39,9 +40,14 @@ export function narrate(inp: NarrateInput): string {
 
   const fitWord = fit >= 80 ? "매우 잘 맞습니다" : fit >= 68 ? "잘 맞는 편입니다" : fit >= 58 ? "부분적으로 맞습니다" : "마찰이 큽니다";
 
+  // For the failing baseline, don't read high raw style values as praise.
+  const colorLine = inp.isBaseline
+    ? `개별 공격 자원은 좋지만(지공 생산성 ${inp.style.attack}) 3백 유지와 느린 전환 때문에 그 장점이 구조로 연결되지 못합니다.`
+    : `4개 축 중 "${AXIS_LABEL[bestAxis[0]]}"가 강하고("${AXIS_LABEL[worstAxis[0]]}"가 약점), 팀 색깔은 ${sw.strengths.join("·")}에서 두드러집니다.`;
+
   return [
     `${coach.name}의 ${coach.formation}(${coach.dna.slice(0, 2).join("·")})은 현 스쿼드와 적합도 ${fit}점으로 ${fitWord}.`,
-    `4개 축 중 "${AXIS_LABEL[bestAxis[0]]}"가 강하고("${AXIS_LABEL[worstAxis[0]]}"가 약점), 팀 색깔은 ${sw.strengths.join("·")}에서 두드러집니다.`,
+    colorLine,
     son ? `손흥민은 ${word(son)}${lki ? `, 이강인은 ${word(lki)}` : ""}.` : "",
     `남아공전 가정: ${inp.counterfactual.summary}`,
     `월드컵 예상 도달은 ${ROUND_LABEL[inp.wcReach.expected]}(밴드 ${inp.wcReach.band}, 조 통과 ${inp.wcReach.adv16}%) — 모델 추정.`,
