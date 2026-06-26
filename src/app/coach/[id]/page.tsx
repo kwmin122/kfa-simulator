@@ -1,17 +1,18 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { squad } from "@/data/squad";
-import { buildXI, computeFit } from "@/engine";
+import { computeFit } from "@/engine";
 import { allCoaches, getCoach, getSim, baselineCoach, baselineSim } from "@/lib/sims";
-import { TIER_LABEL, fitTone, ROUND_LABEL } from "@/lib/format";
+import { TIER_LABEL, fitTone } from "@/lib/format";
 import type { StyleAxes } from "@/data/types";
 import Pitch from "@/components/Pitch";
 import Radar from "@/components/Radar";
 import FiveAxes from "@/components/FiveAxes";
-import KeyPlayers from "@/components/KeyPlayers";
-import SaPanel from "@/components/SaPanel";
-import WcReachBar from "@/components/WcReachBar";
-import Reveal from "@/components/Reveal";
+import SurvivalTable from "@/components/SurvivalTable";
+import SaTable from "@/components/SaTable";
+import WcScenario from "@/components/WcScenario";
+import BaselineDelta from "@/components/BaselineDelta";
+import EvidenceCard, { ConfidenceBadge } from "@/components/EvidenceCard";
 import CountUp from "@/components/CountUp";
 
 export function generateStaticParams() {
@@ -21,18 +22,20 @@ export function generateStaticParams() {
 const AXES: { key: keyof StyleAxes; lo: string; hi: string }[] = [
   { key: "possession", lo: "직선", hi: "점유" },
   { key: "pressHeight", lo: "로우블록", hi: "하이프레스" },
-  { key: "tempo", lo: "느림", hi: "빠름" },
-  { key: "width", lo: "좁게", hi: "넓게" },
   { key: "verticality", lo: "순환", hi: "수직" },
   { key: "buildFromBack", lo: "롱볼", hi: "후방빌드업" },
 ];
 
-function Card({ title, children, className = "" }: { title: string; children: React.ReactNode; className?: string }) {
+function Section({ n, title, sub, children }: { n: string; title: string; sub?: string; children: React.ReactNode }) {
   return (
-    <div className={`rounded-2xl border border-line bg-surface/80 p-5 ${className}`}>
-      <h2 className="mb-4 text-xs font-bold uppercase tracking-[0.15em] text-accent">{title}</h2>
+    <section className="border-t border-line py-7">
+      <div className="mb-4 flex items-baseline gap-3">
+        <span className="font-mono text-sm text-accent">{n}</span>
+        <h2 className="text-lg font-bold tracking-tight text-foreground">{title}</h2>
+        {sub && <span className="text-xs text-muted">{sub}</span>}
+      </div>
       {children}
-    </div>
+    </section>
   );
 }
 
@@ -43,124 +46,107 @@ export default async function CoachPage({ params }: { params: Promise<{ id: stri
   if (!coach || !sim) notFound();
 
   const isBaseline = coach.id === baselineCoach.id;
-  const xi = buildXI(coach, squad);
-  const fit = computeFit(coach, squad, new Set(xi.xi.map((s) => s.player.id)));
+  const fit = computeFit(coach, squad, new Set(sim.xi.map((s) => s.player.id)));
   const tone = fitTone(sim.fitScore);
   const fitDelta = sim.fitScore - baselineSim.fitScore;
 
   return (
-    <main className="mx-auto w-full max-w-5xl px-5 py-8">
+    <main className="mx-auto w-full max-w-3xl px-5 py-8">
       <Link href="/" className="font-mono text-xs text-muted transition-colors hover:text-foreground">← 전체 감독</Link>
 
       {/* Header */}
-      <Reveal immediate>
-        <div className="mt-4 overflow-hidden rounded-3xl border border-line bg-surface/80">
-          <div className="flex flex-col gap-5 p-6 sm:flex-row sm:items-center">
-            <div className="flex-1">
-              <span className="text-xs font-bold uppercase tracking-[0.15em] text-muted">{TIER_LABEL[coach.tier]}</span>
-              <h1 className="headline mt-1 text-5xl">{coach.name}</h1>
-              <p className="mt-1 font-mono text-sm text-muted">{coach.nameEn} · {coach.formation} · {coach.status}</p>
-              {coach.rumor && <p className="mt-2 max-w-lg text-xs italic text-muted">&ldquo;{coach.rumor}&rdquo;</p>}
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {coach.dna.map((d) => <span key={d} className="rounded-full border border-line bg-background/60 px-2.5 py-1 text-xs">{d}</span>)}
+      <header className="mt-5 flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.15em] text-muted">
+            {TIER_LABEL[coach.tier]}
+            {coach.meme && <span className="text-warn">· 예능 IF</span>}
+          </div>
+          <h1 className="headline mt-1 text-5xl sm:text-6xl">{coach.name}</h1>
+          <p className="mt-1 font-mono text-sm text-muted">{coach.nameEn} · {sim.formation} · {coach.status}</p>
+        </div>
+        <div className="text-right">
+          <div className="font-display text-6xl leading-none" style={{ color: tone }}><CountUp to={sim.fitScore} /></div>
+          <div className="text-[11px] text-muted">스쿼드 궁합 / 100</div>
+          {!isBaseline && (
+            <div className="mt-1 text-xs font-bold" style={{ color: fitDelta >= 0 ? "var(--good)" : "var(--bad)" }}>
+              홍명보 대비 {fitDelta >= 0 ? "+" : ""}{fitDelta}
+            </div>
+          )}
+        </div>
+      </header>
+
+      {/* ① 한 줄 결론 */}
+      <p className="mt-6 text-pretty text-xl font-bold leading-relaxed text-foreground sm:text-2xl">
+        {sim.headline}
+      </p>
+      {coach.rumor && <p className="mt-2 text-sm italic text-muted">&ldquo;{coach.rumor}&rdquo;</p>}
+
+      {/* ② 홍명보 대비 변화 */}
+      <Section n="01" title="홍명보 대비, 무엇이 달라지나" sub="팀 스타일 변화">
+        {isBaseline ? (
+          <p className="text-sm leading-relaxed text-muted">현재 기준선이라 변화량은 0입니다. 다른 감독을 고르면 이 자리에 홍명보(3-4-3) 대비 변화가 표시됩니다.</p>
+        ) : (
+          <BaselineDelta deltas={sim.baselineDelta} />
+        )}
+        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {AXES.map((a) => (
+            <div key={a.key}>
+              <div className="mb-1 flex justify-between text-[10px] text-muted"><span>{a.lo}</span><span>{a.hi}</span></div>
+              <div className="relative h-1.5 rounded-full bg-background">
+                <div className="absolute top-1/2 size-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent" style={{ left: `${coach.axes[a.key]}%` }} />
               </div>
             </div>
-            <div className="text-center">
-              <div className="font-display text-7xl" style={{ color: tone }}><CountUp to={sim.fitScore} /></div>
-              <div className="text-[11px] text-muted">스쿼드 적합도 / 100</div>
-              {!isBaseline && <div className="mt-1 text-xs font-bold" style={{ color: fitDelta >= 0 ? "var(--good)" : "var(--bad)" }}>홍명보 대비 {fitDelta >= 0 ? "+" : ""}{fitDelta}</div>}
+          ))}
+        </div>
+      </Section>
+
+      {/* ③ 핵심 선수 생존표 */}
+      <Section n="02" title="손흥민·이강인·김민재는 사는가 죽는가" sub="핵심 선수 생존">
+        <SurvivalTable verdicts={sim.keyVerdicts} />
+      </Section>
+
+      {/* ④ 남아공전 해결 */}
+      <Section n="03" title="남아공전 문제를 해결하는가" sub="6대 문제 진단">
+        <SaTable resolution={sim.saResolution} counterfactual={sim.saCounterfactual} />
+      </Section>
+
+      {/* ⑤ 월드컵 시나리오 */}
+      <Section n="04" title="월드컵, 어디까지 가나" sub="시나리오">
+        <WcScenario scenarios={sim.wcScenarios} />
+        <div className="mt-3 flex gap-6 text-sm">
+          <span className="text-muted">예상 득점 xG <span className="font-mono font-bold text-good">{sim.predictedXg.for}</span></span>
+          <span className="text-muted">예상 실점 xG <span className="font-mono font-bold text-bad">{sim.predictedXg.against}</span></span>
+        </div>
+      </Section>
+
+      {/* ⑥ 근거 */}
+      <Section n="05" title="근거 · 출처" sub="현직·신뢰도">
+        <EvidenceCard coach={coach} />
+      </Section>
+
+      {/* 보조: XI · 색깔 · 분해 */}
+      <Section n="06" title="상세 — 베스트 11 · 팀 색깔 · 궁합 분해" sub="참고">
+        <div className="grid gap-6 sm:grid-cols-2">
+          <div>
+            <div className="mb-2 text-xs text-muted">예상 베스트 11 · {sim.formation}</div>
+            <Pitch formation={sim.formation} xi={sim.xi} />
+          </div>
+          <div className="space-y-5">
+            <div>
+              <div className="mb-1 flex items-center justify-between text-xs text-muted">
+                <span>팀 색깔 (점선=홍명보)</span><ConfidenceBadge confidence={coach.provenance.confidence} />
+              </div>
+              <Radar style={sim.teamStyle} baseline={isBaseline ? undefined : baselineSim.teamStyle} color={tone} />
+            </div>
+            <div>
+              <div className="mb-2 text-xs text-muted">궁합 4축 (핵심33·전술28·약점22·단기17 = 100, 현실성 제외)</div>
+              <FiveAxes axes={fit.axes} />
             </div>
           </div>
         </div>
-      </Reveal>
+      </Section>
 
-      <Reveal immediate delay={0.05}>
-        <p className="mt-5 rounded-2xl border border-line bg-surface/50 p-5 leading-relaxed">{sim.explanation}</p>
-      </Reveal>
-
-      {/* 5-axis + pitch */}
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <Reveal>
-          <Card title="궁합 4축 분해 (왜 이 점수인가)">
-            <FiveAxes axes={sim.axes} />
-            <p className="mt-4 text-[11px] text-muted">핵심 선수 33 · 전술 수행 28 · 남아공 약점 보완 22 · 단기전 17 = 100 (현실성 제외) — 모델 추정</p>
-          </Card>
-        </Reveal>
-        <Reveal delay={0.05}>
-          <Card title={`예상 베스트 11 · ${sim.formation}`}>
-            <Pitch formation={sim.formation} xi={sim.xi} />
-          </Card>
-        </Reveal>
-      </div>
-
-      {/* style + xG, radar + exec */}
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <Reveal>
-          <Card title="어떤 축구를 하나 (스타일)">
-            <div className="space-y-3">
-              {AXES.map((a) => (
-                <div key={a.key}>
-                  <div className="mb-1 flex justify-between text-[11px] text-muted"><span>{a.lo}</span><span>{a.hi}</span></div>
-                  <div className="relative h-2 rounded-full bg-background">
-                    <div className="absolute inset-y-0 left-0 rounded-full bg-kr-blue/40" style={{ width: `${coach.axes[a.key]}%` }} />
-                    <div className="absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-accent" style={{ left: `${coach.axes[a.key]}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-5 grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-line bg-background/40 p-3 text-center">
-                <div className="font-display text-2xl text-good">{sim.predictedXg.for}</div>
-                <div className="text-[11px] text-muted">예상 득점 xG</div>
-              </div>
-              <div className="rounded-xl border border-line bg-background/40 p-3 text-center">
-                <div className="font-display text-2xl text-bad">{sim.predictedXg.against}</div>
-                <div className="text-[11px] text-muted">예상 실점 xG</div>
-              </div>
-            </div>
-          </Card>
-        </Reveal>
-        <Reveal delay={0.05}>
-          <Card title="팀 색깔 (홍명보와 비교)">
-            <div className="flex justify-center"><Radar style={sim.teamStyle} baseline={isBaseline ? undefined : baselineSim.teamStyle} color={tone} /></div>
-            <div className="mt-3 border-t border-line pt-3">
-              <div className="mb-2 text-[11px] font-bold text-muted">전술 수행 — 요구 충족</div>
-              <div className="space-y-1.5">
-                {fit.breakdown.map((r) => (
-                  <div key={r.key} className="flex items-center gap-2 text-xs">
-                    <span className="w-28 shrink-0 truncate text-foreground">{r.label}</span>
-                    <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-background"><div className="h-full rounded-full" style={{ width: `${r.supply}%`, background: fitTone(r.supply) }} /></div>
-                    <span className="w-6 text-right font-mono text-muted">{r.supply}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </Card>
-        </Reveal>
-      </div>
-
-      {/* Key players */}
-      <Reveal>
-        <div className="mt-5"><Card title="손흥민 · 이강인 · 김민재는 사는가 죽는가"><KeyPlayers verdicts={sim.keyVerdicts} /></Card></div>
-      </Reveal>
-
-      {/* SA + WC */}
-      <div className="mt-5 grid gap-5 lg:grid-cols-2">
-        <Reveal><Card title="남아공전 반사실"><SaPanel resolution={sim.saResolution} counterfactual={sim.saCounterfactual} /></Card></Reveal>
-        <Reveal delay={0.05}>
-          <Card title="월드컵 예상도 — 몇 강까지?">
-            <WcReachBar reach={sim.wcReach} />
-            <div className="mt-4 rounded-xl border border-line bg-background/40 p-3 text-sm">
-              <span className="text-muted">홍명보 예상: </span><span className="font-bold">{ROUND_LABEL[baselineSim.wcReach.expected]}</span>
-              <span className="text-muted"> → {coach.name}: </span><span className="font-bold" style={{ color: tone }}>{ROUND_LABEL[sim.wcReach.expected]}</span>
-            </div>
-          </Card>
-        </Reveal>
-      </div>
-
-      <p className="mt-8 text-center text-xs text-muted">
-        출처: {coach.sources.map((s, i) => <a key={i} href={s} target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground">[{i + 1}]</a>)} · 능력치·전술은 주관 추정, 수치는 모델 추정입니다.
-      </p>
+      <p className="mt-6 text-center text-[11px] text-muted">{sim.explanation}</p>
     </main>
   );
 }

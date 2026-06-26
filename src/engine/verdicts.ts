@@ -31,8 +31,13 @@ export function playerVerdict(player: Player, coach: Coach, inXi: boolean): Play
   }
 
   let level: VerdictLevel;
-  if (!inXi) level = "benched";
-  else if (buff >= 5) level = "thrives";
+  if (!inXi) {
+    level = "benched";
+    // Don't show a thrive/die line for someone who isn't even in the XI.
+    reason = buff >= 4
+      ? `스타일은 맞지만 ${coach.formation} 베스트 11 경쟁에서 밀립니다.`
+      : `${coach.formation}에서 자리가 애매해 베스트 11에 들지 못합니다.`;
+  } else if (buff >= 5) level = "thrives";
   else if (buff <= -5) level = "sacrificed";
   else level = "neutral";
 

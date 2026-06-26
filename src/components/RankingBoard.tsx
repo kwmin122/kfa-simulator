@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import type { CoachTier, RankingRow } from "@/data/types";
-import { TIER_LABEL, ROUND_LABEL, fitTone } from "@/lib/format";
+import { TIER_LABEL, ROUND_LABEL, fitTone, CONFIDENCE_META } from "@/lib/format";
 
 const TABS: ({ key: CoachTier | "all"; label: string })[] = [
   { key: "all", label: "전체" },
@@ -53,12 +53,17 @@ export default function RankingBoard({ rows }: { rows: RankingRow[] }) {
               >
                 <span className="w-6 text-center font-mono text-sm font-bold text-muted">{i + 1}</span>
                 <div className="min-w-0 flex-1">
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="font-bold text-foreground">{r.coachName}</span>
                     <span className="rounded bg-background px-1.5 py-0.5 text-[9px] text-muted">{TIER_LABEL[r.tier]}</span>
+                    {r.meme && <span className="rounded bg-warn/15 px-1.5 py-0.5 text-[9px] font-bold text-warn">예능 IF</span>}
                   </div>
-                  <span className="text-[11px] text-muted">
+                  <span className="flex items-center gap-1.5 text-[11px] text-muted">
                     {r.profiled ? `예상 ${ROUND_LABEL[r.expected]}` : "프로필 필요"}
+                    <span className="inline-flex items-center gap-1" title={`근거 신뢰도: ${CONFIDENCE_META[r.confidence].label}`}>
+                      · <span className="size-1.5 rounded-full" style={{ background: CONFIDENCE_META[r.confidence].color }} />
+                      {CONFIDENCE_META[r.confidence].label}
+                    </span>
                   </span>
                 </div>
                 {r.profiled ? (
