@@ -1,6 +1,7 @@
 import Link from "next/link";
 import CompareHero, { type CompareItem } from "@/components/CompareHero";
 import RageGauge from "@/components/RageGauge";
+import VoteWidget from "@/components/VoteWidget";
 import CircularGallery from "@/components/CircularGallery";
 import RankingBoard from "@/components/RankingBoard";
 import Reveal from "@/components/Reveal";
@@ -74,10 +75,11 @@ export default function Home() {
         </Reveal>
       </section>
 
-      {/* Rage gauge — 교체 시급도 (정직한 시뮬 기준 + Fan Pulse 티저) */}
+      {/* Rage gauge + 투표 — 교체 시급도 본 뒤 바로 한 표 */}
       <Reveal immediate delay={0.12}>
-        <div className="mb-5">
+        <div className="mb-5 grid gap-4 lg:grid-cols-[1.3fr_1fr]">
           <RageGauge baselineFit={baselineSim.fitScore} aboveCount={aboveHong} total={profiledCandidates.length} bestName={best.name} bestFit={bestSim.fitScore} />
+          <VoteWidget coaches={candidatesByFit.map((c) => ({ id: c.id, name: c.name }))} simUrgency={Math.round((aboveHong / profiledCandidates.length) * 100)} />
         </div>
       </Reveal>
 
