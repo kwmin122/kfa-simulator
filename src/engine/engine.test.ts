@@ -120,4 +120,14 @@ test("Hong baseline is 3-back (3-4-3) per the SA-match lineup", () => {
   assert.equal(hong.formation, "3-4-3");
 });
 
+test("every player has confidence + sourceNote + strengths/weaknesses + valid attrs", () => {
+  for (const p of squad) {
+    assert.ok(p.confidence, `${p.id} confidence`);
+    assert.ok(p.sourceNote, `${p.id} sourceNote`);
+    assert.ok(p.strengths && p.strengths.length >= 1, `${p.id} strengths`);
+    assert.ok(p.weaknesses && p.weaknesses.length >= 1, `${p.id} weaknesses`);
+    for (const v of Object.values(p.attributes)) assert.ok(v >= 0 && v <= 100, `${p.id} attr range`);
+  }
+});
+
 void marsch;
