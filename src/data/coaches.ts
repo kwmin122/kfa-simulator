@@ -243,10 +243,10 @@ export const enrique: Coach = {
     { key: "holdingDM", weight: 0.8, label: "조율 6번" },
   ],
   intangibles: { complexity: 75, planB: 60, tournamentXP: 80, defensiveStability: 66, starManagement: 74 },
-  provenance: { currentJob: "파리 생제르맹 감독", availability: "클럽 계약 중", sourceUrl: "https://en.wikipedia.org/wiki/Luis_Enrique", lastCheckedAt: "2026-06-26", confidence: "medium" },
+  provenance: { currentJob: "파리 생제르맹 감독 (UCL 우승)", availability: "클럽 계약 중 (사실상 불가)", sourceUrl: "https://en.wikipedia.org/wiki/Luis_Enrique", lastCheckedAt: "2026-06-26", confidence: "high", note: "PSG 챔피언스리그 우승. 2출처 확인." },
   dna: ["점유 지배", "전방 압박", "후방 빌드업"],
   blurb: "극단적 점유와 전방 압박. 발밑 좋은 후방이 전제라 빠르지만 빌드업이 정교하지 않은 현 스쿼드와는 마찰이 크다.",
-  profiled: true, sources: ["https://en.wikipedia.org/wiki/Luis_Enrique"],
+  profiled: true, sources: ["https://www.uefa.com/uefachampionsleague/", "https://en.wikipedia.org/wiki/Luis_Enrique"],
 };
 
 export const bielsa: Coach = {
@@ -263,10 +263,10 @@ export const bielsa: Coach = {
     { key: "pressResistantMF", weight: 0.7, label: "탈압박" },
   ],
   intangibles: { complexity: 85, planB: 30, tournamentXP: 65, defensiveStability: 50, starManagement: 60 },
-  provenance: { currentJob: "우루과이 대표팀 감독", availability: "계약 중", sourceUrl: "https://en.wikipedia.org/wiki/Marcelo_Bielsa", lastCheckedAt: "2026-06-26", confidence: "medium" },
+  provenance: { currentJob: "우루과이 대표팀 감독 (WC 2026)", availability: "우루과이와 계약 (사실상 불가)", sourceUrl: "https://www.transfermarkt.us/marcelo-bielsa/profil/trainer/2553", lastCheckedAt: "2026-06-26", confidence: "high", note: "우루과이 대표팀 (WC2026 본선). Transfermarkt+ESPN 확인." },
   dna: ["극단적 압박", "맨마킹", "하드러닝"],
   blurb: "전원 맨마킹과 미친 활동량의 비엘사 볼. 스쿼드 체력의 한계를 시험하며, 살아나면 폭발하지만 터지면 무너지는 양날의 검.",
-  profiled: true, sources: ["https://en.wikipedia.org/wiki/Marcelo_Bielsa"],
+  profiled: true, sources: ["https://www.transfermarkt.us/marcelo-bielsa/profil/trainer/2553", "https://www.espn.com/soccer/story/_/id/48929677/marcelo-bielsa-omits-luis-suarez-uruguay-world-cup-squad"],
 };
 
 export const hwangSunhong: Coach = {
@@ -517,6 +517,161 @@ export const monk: Coach = {
   provenance: { currentJob: "무직 — 마지막 케임브리지 Utd, 2025.2 퇴임", availability: "선임 가능", sourceUrl: "https://en.wikipedia.org/wiki/Garry_Monk", lastCheckedAt: "2026-06-26", confidence: "low", note: "2024 보도 +2 후보군. 현재 무직(전 케임브리지)." },
 };
 
+// ── Phase B 추가 (현직 WebSearch 검증, 2026-06) ──────────────────────────
+export const mancini: Coach = {
+  id: "mancini", name: "로베르토 만치니", nameEn: "Roberto Mancini", tier: "club",
+  status: "알 사드 감독 (카타르, 2025.11~)", rumor: "유로 2020 우승. 국가대표·아시아 경험으로 연결 가능.",
+  nationality: "이탈리아", age: 61,
+  formation: "4-2-3-1", altFormations: ["4-3-3"],
+  axes: { possession: 68, pressHeight: 64, tempo: 58, width: 64, verticality: 58, buildFromBack: 68 },
+  requirements: [
+    { key: "ballPlayingCB", weight: 0.74, label: "빌드업 CB" },
+    { key: "pressResistantMF", weight: 0.76, label: "탈압박 중원" },
+    { key: "creativeAM", weight: 0.72, label: "10번 창조" },
+    { key: "holdingDM", weight: 0.7, label: "조율 6번" },
+    { key: "paceWingers", weight: 0.66, label: "측면 전환" },
+  ],
+  intangibles: { complexity: 58, planB: 64, tournamentXP: 82, defensiveStability: 66, starManagement: 72 },
+  dna: ["이탈리아식 균형", "점유+조직", "토너먼트 관록"],
+  blurb: "유로 2020 우승의 이탈리아식 균형. 점유와 조직으로 안정감을 더하지만, 폭발적 전환보다는 통제를 택한다.",
+  profiled: true, sources: ["https://en.wikipedia.org/wiki/Roberto_Mancini"],
+  provenance: { currentJob: "알 사드(카타르) 감독", availability: "클럽 계약 중", sourceUrl: "https://en.wikipedia.org/wiki/Roberto_Mancini", lastCheckedAt: "2026-06-26", confidence: "medium", note: "2025.11 알 사드 2년 계약." },
+};
+
+export const low: Coach = {
+  id: "low", name: "요아힘 뢰브", nameEn: "Joachim Löw", tier: "free",
+  status: "무직 (전 독일 대표팀, 2021 사임)", rumor: "2014 월드컵 우승. 독일식 점유·전환의 상징, 이름값.",
+  nationality: "독일", age: 66,
+  formation: "4-2-3-1", altFormations: ["3-4-3", "4-3-3"],
+  axes: { possession: 70, pressHeight: 68, tempo: 62, width: 66, verticality: 60, buildFromBack: 74 },
+  requirements: [
+    { key: "ballPlayingCB", weight: 0.78, label: "후방 빌드업 CB" },
+    { key: "pressResistantMF", weight: 0.8, label: "탈압박 중원" },
+    { key: "creativeAM", weight: 0.7, label: "10번 창조" },
+    { key: "overlappingFB", weight: 0.7, label: "전진 풀백" },
+    { key: "holdingDM", weight: 0.68, label: "조율 6번" },
+  ],
+  intangibles: { complexity: 64, planB: 60, tournamentXP: 88, defensiveStability: 62, starManagement: 70 },
+  dna: ["독일식 점유+전환", "후방 빌드업", "월드컵 DNA"],
+  blurb: "2014 월드컵 우승의 독일식 점유와 전환. 후방 빌드업으로 구조를 세우지만 2021년 이후 현장을 떠나 있다.",
+  profiled: true, sources: ["https://en.wikipedia.org/wiki/Joachim_L%C3%B6w"],
+  provenance: { currentJob: "무직 (전 독일 대표팀, 2021 사임)", availability: "선임 가능", sourceUrl: "https://en.wikipedia.org/wiki/Joachim_L%C3%B6w", lastCheckedAt: "2026-06-26", confidence: "medium" },
+};
+
+export const renard: Coach = {
+  id: "renard", name: "에르베 르나르", nameEn: "Hervé Renard", tier: "national",
+  status: "튀니지 대표팀 감독 (2026.6.16 부임)", rumor: "사우디로 아르헨티나를 잡은 동기부여의 대가. 아시아·아프리카 대표팀 전문.",
+  nationality: "프랑스", age: 57,
+  formation: "4-4-2", altFormations: ["3-5-2", "4-2-3-1"],
+  axes: { possession: 50, pressHeight: 64, tempo: 64, width: 64, verticality: 70, buildFromBack: 50 },
+  requirements: [
+    { key: "paceWingers", weight: 0.76, label: "직선 역습 측면" },
+    { key: "mobileStriker", weight: 0.72, label: "침투 9번" },
+    { key: "holdingDM", weight: 0.72, label: "보호 6번" },
+    { key: "highStaminaFront", weight: 0.72, label: "활동량 전방" },
+    { key: "aerialCB", weight: 0.66, label: "제공권 CB" },
+  ],
+  intangibles: { complexity: 44, planB: 64, tournamentXP: 80, defensiveStability: 64, starManagement: 78 },
+  dna: ["강도·동기부여", "직선 역습", "대표팀 전문"],
+  blurb: "2022 사우디로 아르헨티나를 잡은 동기부여의 대가. 강도와 직선 역습으로 한 방을 만들지만 점유 지배력은 낮다.",
+  profiled: true, sources: ["https://en.wikipedia.org/wiki/Herv%C3%A9_Renard", "https://www.beinsports.com/en-us/soccer/fifa-world-cup-2026/articles/herv%C3%A9-renard-appointed-tunisia-head-coach-during-fifa-world-cup-2026-2026-06-16"],
+  provenance: { currentJob: "튀니지 대표팀 감독 (2026.6.16 부임)", availability: "튀니지와 계약", sourceUrl: "https://www.beinsports.com/en-us/soccer/fifa-world-cup-2026/articles/herv%C3%A9-renard-appointed-tunisia-head-coach-during-fifa-world-cup-2026-2026-06-16", lastCheckedAt: "2026-06-26", confidence: "high", note: "사우디 경질(2026.4) 후 튀니지 부임. 2출처 확인." },
+};
+
+export const choiKanghee: Coach = {
+  id: "choi-kanghee", name: "최강희", nameEn: "Choi Kang-hee", tier: "domestic",
+  status: "무직 (전 산둥 타이산, 중국 대표팀 후보 거론)", rumor: "전북 왕조의 카리스마. 선수단 장악·실리의 한국형 노장.",
+  nationality: "대한민국", age: 67,
+  formation: "4-4-2", altFormations: ["3-4-3", "4-2-3-1"],
+  axes: { possession: 54, pressHeight: 56, tempo: 58, width: 58, verticality: 64, buildFromBack: 52 },
+  requirements: [
+    { key: "mobileStriker", weight: 0.7, label: "침투 9번" },
+    { key: "holdingDM", weight: 0.7, label: "보호 6번" },
+    { key: "paceWingers", weight: 0.68, label: "측면 자원" },
+    { key: "aerialCB", weight: 0.66, label: "제공권 CB" },
+    { key: "boxToBoxCM", weight: 0.66, label: "활동량 중원" },
+  ],
+  intangibles: { complexity: 40, planB: 56, tournamentXP: 72, defensiveStability: 62, starManagement: 76 },
+  dna: ["전북 왕조 리더십", "실리", "선수단 장악"],
+  blurb: "전북 왕조를 세운 카리스마와 선수단 장악력. 실리적이고 단단하지만 전술 트렌드와는 거리가 있다.",
+  profiled: true, sources: ["https://namu.wiki/w/최강희(축구인)"],
+  provenance: { currentJob: "무직 (전 산둥 타이산)", availability: "선임 가능 (중국 대표팀 후보 거론)", sourceUrl: "https://namu.wiki/w/최강희(축구인)", lastCheckedAt: "2026-06-26", confidence: "medium" },
+};
+
+export const kimKidong: Coach = {
+  id: "kim-kidong", name: "김기동", nameEn: "Kim Ki-dong", tier: "domestic",
+  status: "FC 서울 감독", rumor: "포항·서울을 끌어올린 공격적 K리그 색.",
+  nationality: "대한민국", age: 54,
+  formation: "4-2-3-1", altFormations: ["4-4-2", "4-3-3"],
+  axes: { possession: 60, pressHeight: 64, tempo: 64, width: 64, verticality: 64, buildFromBack: 60 },
+  requirements: [
+    { key: "pressResistantMF", weight: 0.72, label: "탈압박 중원" },
+    { key: "paceWingers", weight: 0.72, label: "측면 침투" },
+    { key: "boxToBoxCM", weight: 0.72, label: "박스투박스" },
+    { key: "mobileStriker", weight: 0.68, label: "침투 9번" },
+    { key: "creativeAM", weight: 0.66, label: "창조 자원" },
+  ],
+  intangibles: { complexity: 52, planB: 58, tournamentXP: 60, defensiveStability: 58, starManagement: 68 },
+  dna: ["공격적 K리그", "측면 활용", "동기부여"],
+  blurb: "포항·서울을 끌어올린 공격적이고 측면을 살리는 K리그 색. 다만 대표팀·메이저 경험은 아직 부족하다.",
+  profiled: true, sources: ["https://namu.wiki/w/김기동(축구인)"],
+  provenance: { currentJob: "FC 서울 감독", availability: "클럽 계약 중", sourceUrl: "https://namu.wiki/w/김기동(축구인)", lastCheckedAt: "2026-06-26", confidence: "medium", note: "현직 클럽 확인 권장." },
+};
+
+export const zaccheroni: Coach = {
+  id: "zaccheroni", name: "알베르토 자케로니", nameEn: "Alberto Zaccheroni", tier: "free",
+  status: "무직 (전 일본·UAE 대표팀)", rumor: "3-4-3의 원조. 일본 아시안컵 우승의 노장.",
+  nationality: "이탈리아", age: 73,
+  formation: "3-4-3", altFormations: ["4-2-3-1"],
+  axes: { possession: 62, pressHeight: 58, tempo: 58, width: 66, verticality: 58, buildFromBack: 62 },
+  requirements: [
+    { key: "ballPlayingCB", weight: 0.72, label: "빌드업 CB(3백)" },
+    { key: "overlappingFB", weight: 0.72, label: "윙백 폭" },
+    { key: "creativeAM", weight: 0.7, label: "10번 창조" },
+    { key: "holdingDM", weight: 0.68, label: "조율 6번" },
+    { key: "paceWingers", weight: 0.66, label: "측면 자원" },
+  ],
+  intangibles: { complexity: 56, planB: 56, tournamentXP: 74, defensiveStability: 60, starManagement: 66 },
+  dna: ["3-4-3 원조", "측면 폭", "노장 경험"],
+  blurb: "3-4-3의 원조이자 일본 아시안컵 우승의 노장. 측면 폭과 윙백을 살리지만 최근 현장과는 거리가 있다.",
+  profiled: true, sources: ["https://en.wikipedia.org/wiki/Alberto_Zaccheroni"],
+  provenance: { currentJob: "무직 (전 일본·UAE 대표팀)", availability: "선임 가능 (사실상 은퇴 추정)", sourceUrl: "https://en.wikipedia.org/wiki/Alberto_Zaccheroni", lastCheckedAt: "2026-06-26", confidence: "low" },
+};
+
+// 감독별 고유 한줄 정체성(리서치 기반). 헤드라인이 똑같아 보이지 않도록 — 각자
+// 시그니처 전술을 먼저 말하고, 긍정 우선·리스크는 caveat. 엔진이 뒤에 궁합·델타를 붙임.
+export const COACH_HOOKS: Record<string, string> = {
+  marsch: "전방 4명이 끊임없이 자리를 바꾸는 게겐프레스로 손흥민·황희찬이 폭발하지만, 뒷공간을 내주는 도박이 따릅니다",
+  bento: "황인범을 축으로 한 후방 빌드업으로 팀에 다시 구조를 입히는 전임자의 색입니다",
+  klinsmann: "뚜렷한 전술 구조 없이 스타 개인 능력에 맡기는 자율 방임 — 남아공전 문제는 그대로 남을 위험이 큽니다",
+  moriyasu: "백3·백4를 오가는 일본식 관리형 축구로 안정과 전환을 동시에 잡습니다",
+  klopp: "잃자마자 5초 안에 되빼앗는 헤비메탈 게겐프레스 — 손흥민·황희찬·김민재가 전면에 섭니다",
+  mourinho: "내려서서 잠그고 빠른 측면 역습 한 방으로 끝내는 실리 축구 — 김민재가 살고 이강인은 애매해집니다",
+  "shin-taeyong": "강팀을 잡는 변칙과 세트피스, 한국형 토너먼트의 한 방을 노립니다",
+  potter: "백3·백4를 오가는 유연한 포지셔널로 이강인·김민재의 장점을 살리는 전술가입니다",
+  scaloni: "월드컵 우승 DNA의 토너먼트 밸런스 — 스타를 살리고 경기마다 형태를 바꿉니다",
+  deschamps: "화려함보다 결과, 단단한 수비 위에 개인 능력을 푸는 월드컵형 실리입니다",
+  enrique: "극단적 점유로 경기를 지배하지만, 발밑이 정교하지 않은 후방과 마찰이 큰 모델입니다",
+  bielsa: "전원 맨마킹과 미친 활동량으로 압박을 극단까지 끌어올리지만, 체력과 뒷공간이 시험대입니다",
+  "hwang-sunhong": "직선적이고 투지 있는 한국형 축구 — 화려함보다 단단함을 택합니다",
+  "kim-pangon": "데이터와 체계로 짜는 아시아 정통의 안정적 빌드업입니다",
+  "park-hangseo": "조직력과 정신력으로 팀을 하나로 묶는 형님 리더십, 끈끈한 수비+역습입니다",
+  "lee-junghyo": "광주를 돌풍으로 이끈 공격적 전방위 압박 — 국내에서 가장 현대적인 전술입니다",
+  gamst: "닥치고 공격으로 화력은 폭발하지만 수비 밸런스가 실종되는, 재미용 가정입니다",
+  handongsuk: "FM 속 게겐프레스 메타를 현실로 옮긴 전술 과몰입 — 재미용 가정입니다",
+  seabra: "미터 단위로 라인을 쪼개는 학자형 데이터 빌드업, 다만 대표팀 경험은 미지수입니다",
+  casas: "스페인식 점유 구조와 아시안컵에서 증명된 조직력입니다",
+  gunes: "2002 월드컵 3위의 관록 — 다만 뚜렷한 전술 모델은 물음표입니다",
+  lage: "전환과 측면을 살리는 균형형, 황희찬과의 인연이 있습니다",
+  monk: "영국식 균형의 무난함 — 다만 대표팀 레벨엔 의문이 따릅니다",
+  mancini: "유로 우승의 이탈리아식 균형 — 점유와 조직으로 안정감을 더합니다",
+  low: "2014 월드컵 우승의 독일식 점유+전환으로 후방부터 구조를 세웁니다",
+  renard: "사우디로 아르헨티나를 잡은 동기부여의 대가 — 강도와 직선 역습으로 한 방을 만듭니다",
+  "choi-kanghee": "전북 왕조를 세운 카리스마와 선수단 장악 — 실리적이고 단단한 한국형입니다",
+  "kim-kidong": "포항·서울을 끌어올린 공격적 K리그 색으로 측면과 전환을 살립니다",
+  zaccheroni: "3-4-3의 원조 — 측면 폭과 윙백 활용으로 공간을 넓힙니다",
+};
+
 export const BASELINE_COACH = hongMyungbo;
 
 export const coaches: Coach[] = [
@@ -525,6 +680,7 @@ export const coaches: Coach[] = [
   shinTaeyong, potter, scaloni, deschamps, enrique, bielsa,
   hwangSunhong, kimPangon, parkHangseo, leeJunghyo,
   seabra, casas, gunes, lage, monk,
+  mancini, low, renard, choiKanghee, kimKidong, zaccheroni,
   gamst, handongsuk,
 ];
 

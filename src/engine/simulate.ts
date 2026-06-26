@@ -1,5 +1,6 @@
 import type { Coach, Player, RankingRow, SimulationResult, StyleDelta, TeamStyle } from "@/data/types";
 import { SQUAD_VERSION } from "@/data/squad";
+import { COACH_HOOKS } from "@/data/coaches";
 import { bestXI } from "./buildXI";
 import { computeFit, teamStyle } from "./fit";
 import { keyVerdicts } from "./verdicts";
@@ -31,17 +32,22 @@ function buildBaselineDelta(coach: Coach, style: TeamStyle, baseStyle: TeamStyle
   return deltas.sort((a, b) => Math.abs(b.delta) - Math.abs(a.delta));
 }
 
-/** Headline: POSITIVE style changes first, caveat second. Never lead with risk. */
+/** Headline: lead with the coach's DISTINCT identity (hook), then the dynamic
+ *  궁합. Each coach reads differently. Never lead with risk. */
 function buildHeadline(coach: Coach, fit: number, deltas: StyleDelta[], isBaseline: boolean): string {
   if (isBaseline) {
     return "현재 기준선 — 남아공전 0-1 패, 조별 탈락 위기. 개인 공격 자원은 좋지만 3백 고집과 느린 전환으로 손흥민·이강인·황희찬의 장점이 한 화면에 묶이지 못합니다.";
   }
+  const fitWord = fit >= 80 ? "최적의 궁합" : fit >= 70 ? "좋은 궁합" : fit >= 60 ? "보통 궁합" : "마찰이 큰 궁합";
+
+  const hook = COACH_HOOKS[coach.id];
+  if (hook) return `${hook}. 현 스쿼드와 ${fitWord}(${fit}).`;
+
+  // fallback (no hook yet): positive-first dynamic
   const positives = deltas.filter((d) => d.good && d.delta >= 4).sort((a, b) => b.delta - a.delta);
   const caveat = deltas
     .filter((d) => (!d.good && d.delta >= 6) || (d.good && d.delta <= -6))
     .sort((a, b) => (b.good ? -b.delta : b.delta) - (a.good ? -a.delta : a.delta))[0];
-  const fitWord = fit >= 80 ? "최적의 궁합" : fit >= 70 ? "좋은 궁합" : fit >= 60 ? "보통 궁합" : "마찰이 큰 궁합";
-
   let s = positives.length
     ? `${coach.name}가 오면 한국은 ${positives.slice(0, 2).map((p) => p.label).join("·")}에서 확 살아납니다`
     : `${coach.name}가 와도 홍명보 대비 스타일 변화는 크지 않습니다`;
