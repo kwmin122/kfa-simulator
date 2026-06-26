@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { fitTone } from "@/lib/format";
+import WhatIfScore from "@/components/WhatIfScore";
 
 export interface CompareItem {
   id: string;
@@ -12,6 +13,7 @@ export interface CompareItem {
   fitScore: number;
   formation: string;
   headline: string;
+  whatIf: { kr: number; opp: number };
   deltas: { label: string; delta: number; good: boolean }[];
   core: { name: string; level: string; color: string }[];
 }
@@ -81,8 +83,13 @@ export default function CompareHero({ items, baseline }: { items: CompareItem[];
         </div>
       </div>
 
+      {/* what-if score — 카타르시스 */}
+      <div className="mt-5 rounded-xl border border-line bg-background/40 py-3">
+        <WhatIfScore whatIf={sel.whatIf} />
+      </div>
+
       {/* headline */}
-      <p className="mt-5 text-pretty text-base font-bold leading-relaxed text-foreground">{sel.headline}</p>
+      <p className="mt-4 text-pretty text-base font-bold leading-relaxed text-foreground">{sel.headline}</p>
 
       {/* deltas */}
       <div className="mt-4 flex flex-wrap gap-2">

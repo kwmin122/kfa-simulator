@@ -34,6 +34,16 @@ function buildBaselineDelta(coach: Coach, style: TeamStyle, baseStyle: TeamStyle
 
 /** Headline: lead with the coach's DISTINCT identity (hook), then the dynamic
  *  궁합. Each coach reads differently. Never lead with risk. */
+/** "남아공전이 이 감독이었다면" 가상 스코어. 홍명보는 실제 0-1을 재현. 절대 궁합(fit)에
+ *  비례 — 평범한 감독은 비기고, 잘 맞는 감독만 크게 이긴다. 모델 추정, 0~4 / 0~3 캡. */
+function whatIfScore(predictedXg: { for: number; against: number }, fit: number, isBaseline: boolean): { kr: number; opp: number } {
+  if (isBaseline) return { kr: 0, opp: 1 }; // 실제 결과
+  const edge = (fit - 56) / 14; // fit 56→0(고전), 70→+1, 84→+2 (남아공은 이겨야 할 상대)
+  const kr = Math.min(4, Math.max(0, Math.round(0.6 + edge * 0.8 + (predictedXg.for - 1.0) * 1.2)));
+  const opp = Math.min(3, Math.max(0, Math.round(1.2 - edge * 0.5 - (1.1 - predictedXg.against))));
+  return { kr, opp };
+}
+
 function buildHeadline(coach: Coach, fit: number, deltas: StyleDelta[], isBaseline: boolean): string {
   if (isBaseline) {
     return "현재 기준선 — 남아공전 0-1 패, 조별 탈락 위기. 개인 공격 자원은 좋지만 3백 고집과 느린 전환으로 손흥민·이강인·황희찬의 장점이 한 화면에 묶이지 못합니다.";
@@ -84,7 +94,9 @@ export function simulate(coach: Coach, squad: Player[], baseline: Coach): Simula
     fitScore: fit.fitScore, axes: fit.axes, teamStyle: style,
     strengths, weaknesses, keyVerdicts: verdicts,
     saResolution: saRes, saCounterfactual: cf,
-    predictedXg, wcReach, wcScenarios, baselineDelta, headline, explanation,
+    predictedXg, wcReach, wcScenarios, baselineDelta,
+    whatIf: whatIfScore(predictedXg, fit.fitScore, isBaseline),
+    headline, explanation,
   };
 }
 

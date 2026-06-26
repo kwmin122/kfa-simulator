@@ -1,5 +1,6 @@
 import Link from "next/link";
 import CompareHero, { type CompareItem } from "@/components/CompareHero";
+import RageGauge from "@/components/RageGauge";
 import CircularGallery from "@/components/CircularGallery";
 import RankingBoard from "@/components/RankingBoard";
 import Reveal from "@/components/Reveal";
@@ -21,7 +22,7 @@ const compareItems: CompareItem[] = candidatesByFit.map((c) => {
   const caveat = sim.baselineDelta.find((d) => !d.good && d.delta >= 6);
   return {
     id: c.id, name: c.name, tier: TIER_LABEL[c.tier], meme: !!c.meme,
-    fitScore: sim.fitScore, formation: sim.formation, headline: sim.headline,
+    fitScore: sim.fitScore, formation: sim.formation, headline: sim.headline, whatIf: sim.whatIf,
     deltas: [...pos, ...(caveat ? [caveat] : [])].map((d) => ({ label: d.label, delta: d.delta, good: d.good })),
     core: CORE.map((cp) => {
       const v = sim.keyVerdicts.find((x) => x.playerId === cp.id);
@@ -46,6 +47,8 @@ const STRUCTURAL = (
 ).map((r) => ({ ...r, supply: Math.round(requirementSupply(r.key, squad)) })).sort((a, b) => a.supply - b.supply);
 
 const top3 = candidatesByFit.slice(0, 3);
+const profiledCandidates = candidatesByFit.filter((c) => getSim(c.id)?.fitScore);
+const aboveHong = profiledCandidates.filter((c) => (getSim(c.id)?.fitScore ?? 0) > baselineSim.fitScore).length;
 
 export default function Home() {
   const best = top3[0];
@@ -71,8 +74,15 @@ export default function Home() {
         </Reveal>
       </section>
 
+      {/* Rage gauge — 교체 시급도 (정직한 시뮬 기준 + Fan Pulse 티저) */}
+      <Reveal immediate delay={0.12}>
+        <div className="mb-5">
+          <RageGauge baselineFit={baselineSim.fitScore} aboveCount={aboveHong} total={profiledCandidates.length} bestName={best.name} bestFit={bestSim.fitScore} />
+        </div>
+      </Reveal>
+
       {/* Comparison-first hero — the product's core */}
-      <Reveal immediate delay={0.14}>
+      <Reveal immediate delay={0.16}>
         <CompareHero items={compareItems} baseline={{ name: baselineCoach.name, formation: baselineSim.formation, fitScore: baselineSim.fitScore }} />
       </Reveal>
 

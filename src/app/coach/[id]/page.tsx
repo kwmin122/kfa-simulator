@@ -6,6 +6,8 @@ import { allCoaches, getCoach, getSim, baselineCoach, baselineSim } from "@/lib/
 import { TIER_LABEL, fitTone } from "@/lib/format";
 import type { StyleAxes } from "@/data/types";
 import Pitch from "@/components/Pitch";
+import LineupClash from "@/components/LineupClash";
+import WhatIfScore from "@/components/WhatIfScore";
 import Radar from "@/components/Radar";
 import FiveAxes from "@/components/FiveAxes";
 import SurvivalTable from "@/components/SurvivalTable";
@@ -105,8 +107,11 @@ export default async function CoachPage({ params }: { params: Promise<{ id: stri
         <SurvivalTable verdicts={sim.keyVerdicts} />
       </Section>
 
-      {/* ④ 남아공전 해결 */}
+      {/* ④ 남아공전 해결 + What-if 스코어 */}
       <Section n="03" title="남아공전 문제를 해결하는가" sub="6대 문제 진단">
+        <div className="mb-5 rounded-2xl border border-line bg-surface/60 p-5">
+          <WhatIfScore whatIf={sim.whatIf} isBaseline={isBaseline} big />
+        </div>
         <SaTable resolution={sim.saResolution} counterfactual={sim.saCounterfactual} />
       </Section>
 
@@ -124,8 +129,15 @@ export default async function CoachPage({ params }: { params: Promise<{ id: stri
         <EvidenceCard coach={coach} />
       </Section>
 
+      {/* 라인업 대결 */}
+      {!isBaseline && (
+        <Section n="06" title="라인업 대결 — 홍명보 vs 후보" sub="베스트 11 비교">
+          <LineupClash baseXi={baselineSim.xi} baseFormation={baselineSim.formation} xi={sim.xi} formation={sim.formation} coachName={coach.name} />
+        </Section>
+      )}
+
       {/* 보조: XI · 색깔 · 분해 */}
-      <Section n="06" title="상세 — 베스트 11 · 팀 색깔 · 궁합 분해" sub="참고">
+      <Section n={isBaseline ? "06" : "07"} title="상세 — 베스트 11 · 팀 색깔 · 궁합 분해" sub="참고">
         <div className="grid gap-6 sm:grid-cols-2">
           <div>
             <div className="mb-2 text-xs text-muted">예상 베스트 11 · {sim.formation}</div>

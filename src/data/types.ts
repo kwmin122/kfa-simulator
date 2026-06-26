@@ -244,6 +244,8 @@ export interface SimulationResult {
   wcReach: WcReach;
   wcScenarios: WcScenarios;
   baselineDelta: StyleDelta[];
+  /** "남아공전이 이 감독이었다면" 가상 스코어 (모델 추정). 홍명보=실제 0-1. */
+  whatIf: { kr: number; opp: number };
   headline: string;       // one-line conclusion
   explanation: string;
 }

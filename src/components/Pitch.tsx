@@ -8,11 +8,12 @@ const GROUP_COLOR: Record<string, string> = {
   FW: "var(--kr-red)",
 };
 
-/** Vertical pitch with the XI placed by formation. Attack points upward. */
-export default function Pitch({ formation, xi }: { formation: string; xi: XiSlot[] }) {
+/** Vertical pitch with the XI placed by formation. Attack points upward.
+ *  `highlightIds` rings players (e.g. new starters vs the baseline XI). */
+export default function Pitch({ formation, xi, highlightIds, compact }: { formation: string; xi: XiSlot[]; highlightIds?: Set<string>; compact?: boolean }) {
   const slots = formationSlots(formation);
   return (
-    <div className="relative mx-auto aspect-[2/3] w-full max-w-sm overflow-hidden rounded-2xl border border-border">
+    <div className={`relative mx-auto aspect-[2/3] w-full overflow-hidden rounded-2xl border border-border ${compact ? "max-w-[230px]" : "max-w-sm"}`}>
       {/* turf */}
       <div
         className="absolute inset-0"
@@ -38,6 +39,7 @@ export default function Pitch({ formation, xi }: { formation: string; xi: XiSlot
         const top = `${100 - slot.y}%`; // invert: y=100 (opp) → top
         const color = GROUP_COLOR[s.player.group] ?? "var(--accent)";
         const last = s.player.name.length > 3 ? s.player.name.slice(-3) : s.player.name;
+        const hot = highlightIds?.has(s.player.id);
         return (
           <div
             key={s.player.id}
@@ -45,8 +47,8 @@ export default function Pitch({ formation, xi }: { formation: string; xi: XiSlot
             style={{ left, top }}
           >
             <div
-              className="grid size-8 place-items-center rounded-full border text-[10px] font-bold text-background shadow-lg"
-              style={{ background: color, borderColor: "rgba(255,255,255,0.5)" }}
+              className={`grid ${compact ? "size-6 text-[9px]" : "size-8 text-[10px]"} place-items-center rounded-full border font-bold text-background shadow-lg`}
+              style={{ background: color, borderColor: hot ? "var(--accent)" : "rgba(255,255,255,0.5)", boxShadow: hot ? "0 0 0 2px var(--accent)" : undefined }}
               title={`${s.player.name} · 적합도 ${s.slotFit}`}
             >
               {s.player.captain ? "C" : s.role}
