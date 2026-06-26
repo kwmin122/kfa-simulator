@@ -21,6 +21,25 @@ export function deriveStrengthsWeaknesses(style: TeamStyle): { strengths: string
   return { strengths, weaknesses };
 }
 
+/** 풍부한 월드컵 경로 예측 — 조별(멕시코·체코·남아공)부터 녹아웃까지 서사. */
+export function wcNarrative(coach: Coach, style: TeamStyle, scenarios: { best: WcReach["expected"]; average: WcReach["expected"]; worst: WcReach["expected"] }, isBaseline: boolean): string {
+  if (isBaseline) {
+    return "현 흐름이면 남아공전 0-1 패의 후유증 속에 조별리그 통과 자체가 불투명하다. 3백 고집과 느린 전환이 반복되면 멕시코·체코를 상대로도 주도권을 내주고, 32강 진출마저 위태롭다.";
+  }
+  const strong = style.transition >= 74 ? "빠른 역습 전환" : style.press >= 72 ? "강한 전방 압박" : style.buildUp >= 70 ? "안정적인 후방 빌드업" : style.attack >= 70 ? "측면·박스 침투" : "탄탄한 조직";
+  const R = ROUND_LABEL;
+  const avg = scenarios.average;
+
+  let knock: string;
+  if (avg === "final" || avg === "semi") knock = `16강·8강은 현실적이고, 최상의 흐름이면 ${R[scenarios.best]}까지 노려볼 수 있다.`;
+  else if (avg === "quarter") knock = `32강을 넘어 16강은 무난, 8강도 충분히 도전할 수 있다. 대진이 풀리면 ${R[scenarios.best]}까지 바라본다.`;
+  else if (avg === "round16") knock = `32강을 통과해 16강에서 강호와 정면승부하는 그림이며, 최상이면 ${R[scenarios.best]}도 가능하다.`;
+  else if (avg === "round32") knock = `조별리그를 통과해 32강에 오르는 것이 현실적 목표이고, 그 이상은 대진과 컨디션 변수가 크다.`;
+  else knock = `다만 조별리그 통과 자체가 빠듯해, 남아공전 같은 부진이 반복되면 ${R.group} 위험이 크다.`;
+
+  return `${strong} 위주로 멕시코·체코를 상대로도 승점을 노린다. 남아공전 같은 소모전을 줄여 체력을 아끼고 로테이션을 관리하면, ${knock}`;
+}
+
 export interface NarrateInput {
   coach: Coach; fit: number; axes: FitAxes; style: TeamStyle;
   keyVerdicts: PlayerVerdict[]; counterfactual: { summary: string }; wcReach: WcReach;

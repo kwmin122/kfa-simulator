@@ -246,6 +246,8 @@ export interface SimulationResult {
   baselineDelta: StyleDelta[];
   /** "남아공전이 이 감독이었다면" 가상 스코어 (모델 추정). 홍명보=실제 0-1. */
   whatIf: { kr: number; opp: number };
+  /** 풍부한 월드컵 경로 예측 서사 (조별→녹아웃, 모델 추정). */
+  wcNarrative: string;
   headline: string;       // one-line conclusion
   explanation: string;
 }

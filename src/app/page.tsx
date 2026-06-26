@@ -23,7 +23,7 @@ const compareItems: CompareItem[] = candidatesByFit.map((c) => {
   const caveat = sim.baselineDelta.find((d) => !d.good && d.delta >= 6);
   return {
     id: c.id, name: c.name, tier: TIER_LABEL[c.tier], meme: !!c.meme,
-    fitScore: sim.fitScore, formation: sim.formation, headline: sim.headline, whatIf: sim.whatIf,
+    fitScore: sim.fitScore, formation: sim.formation, headline: sim.headline, whatIf: sim.whatIf, wcNarrative: sim.wcNarrative,
     deltas: [...pos, ...(caveat ? [caveat] : [])].map((d) => ({ label: d.label, delta: d.delta, good: d.good })),
     core: CORE.map((cp) => {
       const v = sim.keyVerdicts.find((x) => x.playerId === cp.id);
@@ -79,7 +79,7 @@ export default function Home() {
       <Reveal immediate delay={0.12}>
         <div className="mb-5 grid gap-4 lg:grid-cols-[1.3fr_1fr]">
           <RageGauge baselineFit={baselineSim.fitScore} aboveCount={aboveHong} total={profiledCandidates.length} bestName={best.name} bestFit={bestSim.fitScore} />
-          <VoteWidget coaches={candidatesByFit.map((c) => ({ id: c.id, name: c.name }))} simUrgency={Math.round((aboveHong / profiledCandidates.length) * 100)} />
+          <VoteWidget coaches={compareItems} baselineFit={baselineSim.fitScore} simUrgency={Math.round((aboveHong / profiledCandidates.length) * 100)} />
         </div>
       </Reveal>
 

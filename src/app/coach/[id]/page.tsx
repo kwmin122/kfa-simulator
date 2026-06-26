@@ -115,9 +115,10 @@ export default async function CoachPage({ params }: { params: Promise<{ id: stri
         <SaTable resolution={sim.saResolution} counterfactual={sim.saCounterfactual} />
       </Section>
 
-      {/* ⑤ 월드컵 시나리오 */}
-      <Section n="04" title="월드컵, 어디까지 가나" sub="시나리오">
+      {/* ⑤ 월드컵 시나리오 + 경로 예측 */}
+      <Section n="04" title="월드컵, 어디까지 가나" sub="시나리오 + 경로 예측">
         <WcScenario scenarios={sim.wcScenarios} />
+        <p className="mt-4 rounded-xl border border-line bg-surface/50 p-4 text-sm leading-relaxed text-foreground">{sim.wcNarrative}</p>
         <div className="mt-3 flex gap-6 text-sm">
           <span className="text-muted">예상 득점 xG <span className="font-mono font-bold text-good">{sim.predictedXg.for}</span></span>
           <span className="text-muted">예상 실점 xG <span className="font-mono font-bold text-bad">{sim.predictedXg.against}</span></span>

@@ -14,6 +14,7 @@ export interface CompareItem {
   formation: string;
   headline: string;
   whatIf: { kr: number; opp: number };
+  wcNarrative: string;
   deltas: { label: string; delta: number; good: boolean }[];
   core: { name: string; level: string; color: string }[];
 }

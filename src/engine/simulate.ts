@@ -6,7 +6,7 @@ import { computeFit, teamStyle } from "./fit";
 import { keyVerdicts } from "./verdicts";
 import { solvesSA, saCounterfactual } from "./saSolve";
 import { project, scenarios } from "./projection";
-import { narrate, deriveStrengthsWeaknesses } from "./narrate";
+import { narrate, deriveStrengthsWeaknesses, wcNarrative } from "./narrate";
 
 /** Risk of being exposed in behind: high line + weak settled defence. */
 function lineRisk(coach: Coach, style: TeamStyle): number {
@@ -96,6 +96,7 @@ export function simulate(coach: Coach, squad: Player[], baseline: Coach): Simula
     saResolution: saRes, saCounterfactual: cf,
     predictedXg, wcReach, wcScenarios, baselineDelta,
     whatIf: whatIfScore(predictedXg, fit.fitScore, isBaseline),
+    wcNarrative: wcNarrative(coach, style, wcScenarios, isBaseline),
     headline, explanation,
   };
 }
