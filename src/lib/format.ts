@@ -1,4 +1,4 @@
-import type { CoachTier, Confidence, FitAxes, TeamStyle, VerdictLevel, WcRound } from "@/data/types";
+import type { CoachTier, Confidence, FitAxes, RoleQuality, TeamStyle, VerdictLevel, WcRound } from "@/data/types";
 
 export const ROUND_LABEL: Record<WcRound, string> = {
   group: "조별 탈락",
@@ -40,6 +40,13 @@ export const CONFIDENCE_META: Record<Confidence, { label: string; color: string 
   high: { label: "근거 충실", color: "var(--good)" },
   medium: { label: "보도 기반", color: "var(--warn)" },
   low: { label: "추정·낮음", color: "var(--bad)" },
+};
+
+/** Key players are graded by role quality (never benched). */
+export const ROLEQ_META: Record<RoleQuality, { label: string; color: string; arrow: string }> = {
+  optimal: { label: "최적 역할", color: "var(--good)", arrow: "◎" },
+  limited: { label: "제한적", color: "var(--warn)", arrow: "△" },
+  misused: { label: "장점이 죽음", color: "var(--bad)", arrow: "✕" },
 };
 
 export const VERDICT_META: Record<VerdictLevel, { label: string; color: string; arrow: string }> = {

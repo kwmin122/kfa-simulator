@@ -38,7 +38,7 @@ export default function Pitch({ formation, xi, highlightIds, compact }: { format
         const left = `${slot.x}%`;
         const top = `${100 - slot.y}%`; // invert: y=100 (opp) → top
         const color = GROUP_COLOR[s.player.group] ?? "var(--accent)";
-        const last = s.player.name.length > 3 ? s.player.name.slice(-3) : s.player.name;
+        const last = s.player.shortName;
         const hot = highlightIds?.has(s.player.id);
         return (
           <div

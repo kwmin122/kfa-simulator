@@ -1,7 +1,8 @@
 import type { Coach, Player, RankingRow, SimulationResult, StyleDelta, TeamStyle } from "@/data/types";
 import { SQUAD_VERSION } from "@/data/squad";
 import { COACH_HOOKS } from "@/data/coaches";
-import { bestXI } from "./buildXI";
+import { bestXI, fixedXI } from "./buildXI";
+import { HONG_SA_FORMATION, HONG_SA_XI } from "@/data/saMatch";
 import { computeFit, teamStyle } from "./fit";
 import { keyVerdicts } from "./verdicts";
 import { solvesSA, saCounterfactual } from "./saSolve";
@@ -65,11 +66,16 @@ function buildHeadline(coach: Coach, fit: number, deltas: StyleDelta[], isBaseli
   return `${s} — 현 스쿼드와 ${fitWord}(${fit}).`;
 }
 
+/** Hong (baseline) uses his ACTUAL South Africa XI, not a computed best XI —
+ *  so benching Son/Lee Jae-sung shows up as the real failure it was. */
+const buildCoachXI = (coach: Coach, squad: Player[], baseline: Coach) =>
+  coach.id === baseline.id ? fixedXI(squad, HONG_SA_FORMATION, HONG_SA_XI, coach) : bestXI(coach, squad);
+
 export function simulate(coach: Coach, squad: Player[], baseline: Coach): SimulationResult {
-  const { formation, xi } = bestXI(coach, squad);
+  const { formation, xi } = buildCoachXI(coach, squad, baseline);
   const xiIds = new Set(xi.map((s) => s.player.id));
 
-  const baseBuilt = bestXI(baseline, squad);
+  const baseBuilt = fixedXI(squad, HONG_SA_FORMATION, HONG_SA_XI, baseline);
   const baseStyle = teamStyle(baseline, baseBuilt.xi);
   const baseLineRisk = lineRisk(baseline, baseStyle);
 
@@ -96,7 +102,7 @@ export function simulate(coach: Coach, squad: Player[], baseline: Coach): Simula
     saResolution: saRes, saCounterfactual: cf,
     predictedXg, wcReach, wcScenarios, baselineDelta,
     whatIf: whatIfScore(predictedXg, fit.fitScore, isBaseline),
-    wcNarrative: wcNarrative(coach, style, wcScenarios, isBaseline),
+    wcNarrative: wcNarrative(coach, fit.fitScore, style, wcScenarios, isBaseline),
     headline, explanation,
   };
 }

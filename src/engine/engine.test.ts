@@ -120,6 +120,43 @@ test("Hong baseline is 3-back (3-4-3) per the SA-match lineup", () => {
   assert.equal(hong.formation, "3-4-3");
 });
 
+// ── Phase Q: ground-truth + quality gates ──────────────────────────────────
+import { HONG_SA_XI } from "@/data/saMatch";
+
+test("홍명보 baseline = 실제 남아공전 XI (bestXI 아님), 손흥민·이재성 벤치", () => {
+  const hong = byId("hong-myungbo");
+  const xiIds = hong.xi.map((s) => s.player.id);
+  assert.deepEqual(xiIds, HONG_SA_XI, "홍명보 XI는 실제 남아공전 라인업과 일치해야 함");
+  assert.ok(!xiIds.includes("son-heungmin"), "손흥민은 홍명보 XI에 없어야(벤치)");
+  assert.ok(!xiIds.includes("lee-jaesung"), "이재성은 홍명보 XI에 없어야(벤치)");
+});
+
+test("핵심 선수는 role-quality로 평가 (이강인 '탈락' 금지)", () => {
+  for (const s of sims) {
+    const lki = s.keyVerdicts.find((v) => v.playerId === "lee-kangin")!;
+    assert.ok(["optimal", "limited", "misused"].includes(lki.roleQuality ?? ""), `${s.coachId} 이강인 roleQuality 필요`);
+  }
+  // 홍명보의 이강인은 misused 또는 limited (장점이 안 살아남)
+  const hongLki = byId("hong-myungbo").keyVerdicts.find((v) => v.playerId === "lee-kangin")!;
+  assert.ok(["misused", "limited"].includes(hongLki.roleQuality!), "홍명보 이강인은 misused/limited여야");
+  // 손흥민(핵심3)은 후보 감독 XI에 항상 포함
+  const bento = byId("bento");
+  assert.ok(bento.xi.some((x) => x.player.id === "son-heungmin"), "후보 감독은 손흥민을 벤치 안 함");
+});
+
+test("이름 렌더: 옌스 카스트로프 shortName ≠ 트로프, 전원 shortName 보유", () => {
+  for (const p of squad) assert.ok(p.shortName && p.shortName.length > 0, `${p.id} shortName`);
+  const castrop = squad.find((p) => p.id === "jens-castrop")!;
+  assert.notEqual(castrop.shortName, "트로프");
+  assert.equal(castrop.shortName, "옌스");
+});
+
+test("WC narrative는 감독마다 달라야 (2명 이상 동일 = 실패)", () => {
+  const profiled = sims.filter((s) => s.coachId !== "hong-myungbo");
+  const set = new Set(profiled.map((s) => s.wcNarrative));
+  assert.equal(set.size, profiled.length, "WC narrative가 중복되는 감독이 있음");
+});
+
 test("every player has confidence + sourceNote + strengths/weaknesses + valid attrs", () => {
   for (const p of squad) {
     assert.ok(p.confidence, `${p.id} confidence`);

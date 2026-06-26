@@ -21,23 +21,39 @@ export function deriveStrengthsWeaknesses(style: TeamStyle): { strengths: string
   return { strengths, weaknesses };
 }
 
-/** 풍부한 월드컵 경로 예측 — 조별(멕시코·체코·남아공)부터 녹아웃까지 서사. */
-export function wcNarrative(coach: Coach, style: TeamStyle, scenarios: { best: WcReach["expected"]; average: WcReach["expected"]; worst: WcReach["expected"] }, isBaseline: boolean): string {
+/** 풍부한 월드컵 경로 예측 — 감독 정체성(dna)·고유 약점·시나리오 밴드를 결합. 템플릿
+ *  아님: dna와 risk가 감독마다 달라 서사가 서로 다르게 읽힌다. */
+export function wcNarrative(coach: Coach, fit: number, style: TeamStyle, scenarios: { best: WcReach["expected"]; average: WcReach["expected"] }, isBaseline: boolean): string {
   if (isBaseline) {
-    return "현 흐름이면 남아공전 0-1 패의 후유증 속에 조별리그 통과 자체가 불투명하다. 3백 고집과 느린 전환이 반복되면 멕시코·체코를 상대로도 주도권을 내주고, 32강 진출마저 위태롭다.";
+    return "현 흐름이면 남아공전 0-1 패의 후유증 속에 조별리그 통과 자체가 불투명하다. 손흥민·이재성을 벤치에 두는 로테이션과 3백 고집, 느린 전환이 반복되면 멕시코·체코를 상대로도 주도권을 내주고 32강 진출마저 위태롭다.";
   }
-  const strong = style.transition >= 74 ? "빠른 역습 전환" : style.press >= 72 ? "강한 전방 압박" : style.buildUp >= 70 ? "안정적인 후방 빌드업" : style.attack >= 70 ? "측면·박스 침투" : "탄탄한 조직";
   const R = ROUND_LABEL;
+  const dna = coach.dna.slice(0, 2).join("·");
+  const fitVerb = fit >= 78 ? "압도하며 주도권을 노린다" : fit >= 68 ? "대등하게 맞선다" : fit >= 58 ? "끈질기게 버틴다" : "고전이 예상된다";
+
+  // 감독별 고유 약점(실제 수치 기반)
+  const i = coach.intangibles;
+  const risk = style.defense < 62 || i.defensiveStability < 45
+    ? "수비 밸런스가 흔들려 역습 한 방에 실점하는 게 변수다"
+    : i.complexity >= 72
+      ? "복잡한 전술을 짧은 대표팀 소집 기간에 이식하는 속도가 관건이다"
+      : i.tournamentXP < 50
+        ? "토너먼트 경험 부족이 큰 경기 한 순간에 드러날 수 있다"
+        : style.attack < 60
+          ? "적은 기회를 살리는 결정력이 따라줘야 한다"
+          : i.starManagement < 55
+            ? "스타 선수단을 하나로 묶는 관리가 관건이다"
+            : "큰 경기 집중력 유지가 마지막 관문이다";
+
   const avg = scenarios.average;
-
   let knock: string;
-  if (avg === "final" || avg === "semi") knock = `16강·8강은 현실적이고, 최상의 흐름이면 ${R[scenarios.best]}까지 노려볼 수 있다.`;
-  else if (avg === "quarter") knock = `32강을 넘어 16강은 무난, 8강도 충분히 도전할 수 있다. 대진이 풀리면 ${R[scenarios.best]}까지 바라본다.`;
-  else if (avg === "round16") knock = `32강을 통과해 16강에서 강호와 정면승부하는 그림이며, 최상이면 ${R[scenarios.best]}도 가능하다.`;
-  else if (avg === "round32") knock = `조별리그를 통과해 32강에 오르는 것이 현실적 목표이고, 그 이상은 대진과 컨디션 변수가 크다.`;
-  else knock = `다만 조별리그 통과 자체가 빠듯해, 남아공전 같은 부진이 반복되면 ${R.group} 위험이 크다.`;
+  if (avg === "final" || avg === "semi") knock = `16강·8강은 현실적이고 최상의 흐름이면 ${R[scenarios.best]}까지 노려볼 수 있다`;
+  else if (avg === "quarter") knock = `32강을 넘어 16강은 무난하고 8강도 충분히 도전, 대진이 풀리면 ${R[scenarios.best]}까지 바라본다`;
+  else if (avg === "round16") knock = `32강을 통과해 16강에서 강호와 정면승부하는 그림이며 최상이면 ${R[scenarios.best]}도 가능하다`;
+  else if (avg === "round32") knock = `조별리그 통과 후 32강이 현실적 목표이고 그 이상은 대진·컨디션 변수가 크다`;
+  else knock = `조별리그 통과 자체가 빠듯해 자칫 ${R.group} 위험이 있다`;
 
-  return `${strong} 위주로 멕시코·체코를 상대로도 승점을 노린다. 남아공전 같은 소모전을 줄여 체력을 아끼고 로테이션을 관리하면, ${knock}`;
+  return `${dna} 기반으로 조별리그에서 멕시코·체코를 ${fitVerb}. 남아공전 같은 소모전을 줄여 체력을 아끼고 로테이션을 관리하면, ${knock}. 단, ${risk}.`;
 }
 
 export interface NarrateInput {

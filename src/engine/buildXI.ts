@@ -8,6 +8,48 @@ export interface XiResult {
   bench: Player[]; // unused squad members
 }
 
+const clampFit = (v: number) => Math.round(Math.min(100, Math.max(0, v)));
+/** 손흥민·이강인·김민재 — 핵심 3인은 절대 벤치되지 않는다(역할 품질로만 평가). */
+export const CORE3 = ["son-heungmin", "lee-kangin", "kim-minjae"];
+
+/** Build a FIXED XI from an ordered player-id list (used for Hong's real SA XI). */
+export function fixedXI(squad: Player[], formation: string, ids: string[], coach: Coach): XiResult {
+  const slots = formationSlots(formation);
+  const xi: XiSlot[] = [];
+  ids.forEach((id, i) => {
+    const p = squad.find((x) => x.id === id);
+    if (!p) return;
+    const role = (slots[i] ?? slots[0]).role;
+    xi.push({ role, player: p, slotFit: clampFit(slotScore(p, role, coach.axes)) });
+  });
+  const usedIds = new Set(xi.map((s) => s.player.id));
+  return { formation, xi, bench: squad.filter((p) => !usedIds.has(p.id)) };
+}
+
+/** Force the 3 core players into the XI if a system would otherwise bench them.
+ *  Swaps each missing core player into the slot where they fit best, replacing
+ *  the lowest-cost non-core occupant. Core players are too important to drop. */
+function ensureCore(result: XiResult, squad: Player[], coach: Coach): XiResult {
+  const xi = [...result.xi];
+  for (const id of CORE3) {
+    if (xi.some((s) => s.player.id === id)) continue;
+    const player = squad.find((p) => p.id === id);
+    if (!player) continue;
+    let bestIdx = -1, bestNet = -Infinity, bestScore = 0;
+    for (let i = 0; i < xi.length; i++) {
+      const slot = xi[i];
+      if (CORE3.includes(slot.player.id) || slot.role === "GK") continue;
+      if (positionMatch(player, slot.role) < 0.4) continue;
+      const newScore = slotScore(player, slot.role, coach.axes);
+      const net = newScore - slot.slotFit; // least loss
+      if (net > bestNet) { bestNet = net; bestIdx = i; bestScore = newScore; }
+    }
+    if (bestIdx >= 0) xi[bestIdx] = { role: xi[bestIdx].role, player, slotFit: clampFit(bestScore) };
+  }
+  const usedIds = new Set(xi.map((s) => s.player.id));
+  return { formation: result.formation, xi, bench: squad.filter((p) => !usedIds.has(p.id)) };
+}
+
 /**
  * Build the best XI for a coach against a squad, style-weighted (not just by
  * raw quality) and scarce-position-first to avoid greedy mis-assignments.
@@ -78,5 +120,5 @@ export function bestXI(coach: Coach, squad: Player[]): XiResult {
       best = r;
     }
   }
-  return best;
+  return ensureCore(best, squad, coach);
 }

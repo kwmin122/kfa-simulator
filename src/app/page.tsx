@@ -8,14 +8,14 @@ import Reveal from "@/components/Reveal";
 import { squad } from "@/data/squad";
 import { requirementSupply } from "@/engine";
 import { allCandidates, candidatesByFit, getSim, ranking, baselineSim, baselineCoach } from "@/lib/sims";
-import { fitTone, ROUND_LABEL, TIER_LABEL, VERDICT_META } from "@/lib/format";
+import { fitTone, ROUND_LABEL, TIER_LABEL, ROLEQ_META } from "@/lib/format";
 
 const CORE = [
   { id: "son-heungmin", short: "손흥민" },
   { id: "lee-kangin", short: "이강인" },
   { id: "kim-minjae", short: "김민재" },
 ];
-const LEVEL_SHORT: Record<string, string> = { thrives: "산다", neutral: "유지", sacrificed: "축소", benched: "탈락" };
+const RQ_SHORT: Record<string, string> = { optimal: "최적", limited: "제한", misused: "죽음" };
 
 const compareItems: CompareItem[] = candidatesByFit.map((c) => {
   const sim = getSim(c.id)!;
@@ -27,8 +27,8 @@ const compareItems: CompareItem[] = candidatesByFit.map((c) => {
     deltas: [...pos, ...(caveat ? [caveat] : [])].map((d) => ({ label: d.label, delta: d.delta, good: d.good })),
     core: CORE.map((cp) => {
       const v = sim.keyVerdicts.find((x) => x.playerId === cp.id);
-      const meta = VERDICT_META[v?.level ?? "neutral"];
-      return { name: cp.short, level: LEVEL_SHORT[v?.level ?? "neutral"], color: meta.color };
+      const rq = v?.roleQuality ?? "limited";
+      return { name: cp.short, level: RQ_SHORT[rq], color: ROLEQ_META[rq].color };
     }),
   };
 });

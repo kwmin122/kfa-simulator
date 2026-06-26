@@ -22,7 +22,7 @@ const SRC_KR = "K리그/대표팀 역할 + 보도 기반 추정";
 export const squad: Player[] = [
   // ── Goalkeepers ─────────────────────────────────────────────────────────
   {
-    id: "jo-hyeonwoo", name: "조현우", nameEn: "Jo Hyeon-woo", group: "GK",
+    id: "jo-hyeonwoo", name: "조현우", nameEn: "Jo Hyeon-woo", shortName: "조현우", group: "GK",
     primary: "GK", eligible: ["GK"], age: 34, club: "울산 HD", caps: 70, foot: "R",
     marketValueM: 2, gkRating: 82, confidence: "medium", sourceNote: SRC_KR,
     attributes: { buildUp: 58, progression: 30, finishing: 10, pressWork: 35, defending: 83, versatility: 40, ntFit: 84, form: 82 },
@@ -31,7 +31,7 @@ export const squad: Player[] = [
     note: "반응·선방 좋은 No.1, 발밑 분배는 평범",
   },
   {
-    id: "kim-seunggyu", name: "김승규", nameEn: "Kim Seung-gyu", group: "GK",
+    id: "kim-seunggyu", name: "김승규", nameEn: "Kim Seung-gyu", shortName: "김승규", group: "GK",
     primary: "GK", eligible: ["GK"], age: 35, club: "FC 도쿄", caps: 90, foot: "R",
     marketValueM: 1, gkRating: 77, confidence: "medium", sourceNote: SRC_TM,
     attributes: { buildUp: 56, progression: 28, finishing: 10, pressWork: 34, defending: 78, versatility: 38, ntFit: 74, form: 62 },
@@ -40,7 +40,7 @@ export const squad: Player[] = [
     note: "경험 풍부한 베테랑 백업",
   },
   {
-    id: "song-bumkeun", name: "송범근", nameEn: "Song Bum-keun", group: "GK",
+    id: "song-bumkeun", name: "송범근", nameEn: "Song Bum-keun", shortName: "송범근", group: "GK",
     primary: "GK", eligible: ["GK"], age: 28, club: "전북 현대", caps: 5, foot: "R",
     marketValueM: 2, gkRating: 76, confidence: "medium", sourceNote: SRC_KR,
     attributes: { buildUp: 66, progression: 32, finishing: 10, pressWork: 38, defending: 76, versatility: 42, ntFit: 60, form: 66 },
@@ -51,7 +51,7 @@ export const squad: Player[] = [
 
   // ── Centre-backs ────────────────────────────────────────────────────────
   {
-    id: "kim-minjae", name: "김민재", nameEn: "Kim Min-jae", group: "DF",
+    id: "kim-minjae", name: "김민재", nameEn: "Kim Min-jae", shortName: "김민재", group: "DF",
     primary: "CB", eligible: ["CB"], age: 29, club: "바이에른 뮌헨", caps: 75, foot: "R",
     marketValueM: 40, confidence: "medium", sourceNote: "EPL/분데스 + UCL 출전 기반 큐레이션",
     attributes: { buildUp: 76, progression: 58, finishing: 30, pressWork: 74, defending: 90, versatility: 58, ntFit: 86, form: 80 },
@@ -67,9 +67,14 @@ export const squad: Player[] = [
       thrive: "회복 속도가 좋아 높은 수비 라인을 커버하는 시스템에서 가치가 극대화됩니다.",
       die: "후방 빌드업의 모든 책임을 떠안으면 실책 리스크가 커집니다.",
     },
+    roles: {
+      optimal: "회복 속도를 살려 높은 수비 라인을 통째로 커버한다. 공격적으로 라인을 올려도 뒷공간을 메워 세계적 CB의 가치가 극대화된다.",
+      limited: "수비는 단단하지만 라인이 낮게 서, 회복 속도라는 최대 강점을 펼칠 무대가 좁아진다.",
+      misused: "후방 빌드업의 책임을 홀로 떠안아 볼을 길게 운반하다 위치를 잃는다. 강한 압박을 받으면 실책 리스크가 커진다.",
+    },
   },
   {
-    id: "cho-yumin", name: "조유민", nameEn: "Cho Yu-min", group: "DF",
+    id: "cho-yumin", name: "조유민", nameEn: "Cho Yu-min", shortName: "조유민", group: "DF",
     primary: "CB", eligible: ["CB"], age: 29, club: "샤르자", caps: 18, foot: "R",
     marketValueM: 3, confidence: "medium", sourceNote: SRC_TM,
     attributes: { buildUp: 60, progression: 40, finishing: 32, pressWork: 62, defending: 80, versatility: 46, ntFit: 66, form: 70 },
@@ -78,7 +83,7 @@ export const squad: Player[] = [
     note: "공중볼·몸싸움 강점, 빌드업은 보통",
   },
   {
-    id: "kim-taehyeon", name: "김태현", nameEn: "Kim Tae-hyeon", group: "DF",
+    id: "kim-taehyeon", name: "김태현", nameEn: "Kim Tae-hyeon", shortName: "김태현", group: "DF",
     primary: "CB", eligible: ["CB", "RB"], age: 24, club: "카시마 앤틀러스", caps: 8, foot: "R",
     marketValueM: 4, confidence: "low", sourceNote: SRC_TM,
     attributes: { buildUp: 64, progression: 50, finishing: 30, pressWork: 66, defending: 72, versatility: 72, ntFit: 60, form: 68 },
@@ -87,7 +92,7 @@ export const squad: Player[] = [
     note: "스피드·멀티 활용 가능한 젊은 수비수",
   },
   {
-    id: "lee-hanbeom", name: "이한범", nameEn: "Lee Han-beom", group: "DF",
+    id: "lee-hanbeom", name: "이한범", nameEn: "Lee Han-beom", shortName: "이한범", group: "DF",
     primary: "CB", eligible: ["CB", "DM"], age: 27, club: "미트윌란", caps: 6, foot: "R",
     marketValueM: 5, confidence: "low", sourceNote: SRC_TM,
     attributes: { buildUp: 73, progression: 56, finishing: 28, pressWork: 64, defending: 74, versatility: 68, ntFit: 62, form: 70 },
@@ -97,7 +102,7 @@ export const squad: Player[] = [
   },
   // ── Full-backs / wing-backs ───────────────────────────────────────────────
   {
-    id: "seol-youngwoo", name: "설영우", nameEn: "Seol Young-woo", group: "DF",
+    id: "seol-youngwoo", name: "설영우", nameEn: "Seol Young-woo", shortName: "설영우", group: "DF",
     primary: "RB", eligible: ["RB", "RWB", "LB", "LWB", "CB"], age: 27, club: "츠르베나 즈베즈다", caps: 20, foot: "R",
     marketValueM: 7, confidence: "medium", sourceNote: "레드스타 클럽폼은 우수(FotMob 7.58)이나 26 WC 부진(남아공전 6.9) 반영",
     attributes: { buildUp: 68, progression: 66, finishing: 36, pressWork: 74, defending: 66, versatility: 86, ntFit: 70, form: 64 },
@@ -106,7 +111,7 @@ export const squad: Player[] = [
     note: "클럽선 우수하나 26 월드컵 경기력 부진, 드리블보다 패스형",
   },
   {
-    id: "kim-moonhwan", name: "김문환", nameEn: "Kim Moon-hwan", group: "DF",
+    id: "kim-moonhwan", name: "김문환", nameEn: "Kim Moon-hwan", shortName: "김문환", group: "DF",
     primary: "RB", eligible: ["RB", "RWB"], age: 30, club: "대전 하나 시티즌", caps: 30, foot: "R",
     marketValueM: 2, confidence: "medium", sourceNote: SRC_KR,
     attributes: { buildUp: 56, progression: 66, finishing: 34, pressWork: 74, defending: 64, versatility: 58, ntFit: 64, form: 66 },
@@ -115,7 +120,7 @@ export const squad: Player[] = [
     note: "활동량·전진 좋은 오른쪽 풀백",
   },
   {
-    id: "lee-taeseok", name: "이태석", nameEn: "Lee Tae-seok", group: "DF",
+    id: "lee-taeseok", name: "이태석", nameEn: "Lee Tae-seok", shortName: "이태석", group: "DF",
     primary: "LB", eligible: ["LB", "LWB", "CB"], age: 23, club: "오스트리아 빈", caps: 4, foot: "L",
     marketValueM: 3, confidence: "low", sourceNote: SRC_TM,
     attributes: { buildUp: 68, progression: 72, finishing: 34, pressWork: 72, defending: 62, versatility: 64, ntFit: 58, form: 68 },
@@ -124,7 +129,7 @@ export const squad: Player[] = [
     note: "왼발 풀백, 오버랩·크로스 활발",
   },
   {
-    id: "park-jinseob", name: "박진섭", nameEn: "Park Jin-seob", group: "DF",
+    id: "park-jinseob", name: "박진섭", nameEn: "Park Jin-seob", shortName: "박진섭", group: "DF",
     primary: "LB", eligible: ["LB", "LWB", "CB"], age: 30, club: "저장 FC", caps: 12, foot: "L",
     marketValueM: 2, confidence: "low", sourceNote: SRC_KR,
     attributes: { buildUp: 64, progression: 58, finishing: 32, pressWork: 70, defending: 70, versatility: 64, ntFit: 60, form: 62 },
@@ -135,7 +140,7 @@ export const squad: Player[] = [
 
   // ── Defensive / central midfield ──────────────────────────────────────────
   {
-    id: "hwang-inbeom", name: "황인범", nameEn: "Hwang In-beom", group: "MF",
+    id: "hwang-inbeom", name: "황인범", nameEn: "Hwang In-beom", shortName: "황인범", group: "MF",
     primary: "DM", eligible: ["DM", "CM"], age: 29, club: "페예노르트", caps: 65, foot: "R",
     marketValueM: 12, confidence: "medium", sourceNote: "에레디비시 + 대표팀 핵심 역할 큐레이션",
     attributes: { buildUp: 86, progression: 78, finishing: 50, pressWork: 78, defending: 66, versatility: 68, ntFit: 84, form: 80 },
@@ -151,9 +156,14 @@ export const squad: Player[] = [
       thrive: "빌드업 중심으로 보호받으면 경기 템포를 지배합니다.",
       die: "단순 수비형 파괴자로만 쓰이면 최대 강점이 사라집니다.",
     },
+    roles: {
+      optimal: "빌드업 중심에서 보호받으며 탈압박과 전진 패스로 경기 템포를 직접 지배한다. 중원의 메트로놈이 된다.",
+      limited: "중원에 서지만 역할이 수비·연결에 치우쳐, 템포를 좌우하는 창조적 영향력은 줄어든다.",
+      misused: "고강도 압박에 그대로 노출되거나 단순 파괴자 역할만 받아, 탈압박·배급이라는 최대 강점이 사라진다.",
+    },
   },
   {
-    id: "paik-seungho", name: "백승호", nameEn: "Paik Seung-ho", group: "MF",
+    id: "paik-seungho", name: "백승호", nameEn: "Paik Seung-ho", shortName: "백승호", group: "MF",
     primary: "DM", eligible: ["DM", "CM"], age: 28, club: "버밍엄 시티", caps: 35, foot: "R",
     marketValueM: 5, confidence: "medium", sourceNote: SRC_TM,
     attributes: { buildUp: 78, progression: 66, finishing: 52, pressWork: 76, defending: 72, versatility: 66, ntFit: 70, form: 70 },
@@ -162,7 +172,7 @@ export const squad: Player[] = [
     note: "박스투박스, 전개·중거리 균형",
   },
   {
-    id: "jens-castrop", name: "옌스 카스트로프", nameEn: "Jens Castrop", group: "MF",
+    id: "jens-castrop", name: "옌스 카스트로프", nameEn: "Jens Castrop", shortName: "옌스", group: "MF",
     primary: "DM", eligible: ["DM", "CM", "RB", "LB", "RWB"], age: 22, club: "보루시아 묀헨글라드바흐", caps: 4, foot: "R",
     marketValueM: 8, confidence: "medium", sourceNote: "분데스리가(묀헨글라드바흐) + 독일 연령별 대표 경력 기반 추정",
     attributes: { buildUp: 73, progression: 70, finishing: 50, pressWork: 90, defending: 75, versatility: 78, ntFit: 66, form: 82 },
@@ -171,7 +181,7 @@ export const squad: Player[] = [
     note: "독일 출생 귀화 박스투박스, 게겐프레스 시스템의 엔진",
   },
   {
-    id: "kim-jingyu", name: "김진규", nameEn: "Kim Jin-gyu", group: "MF",
+    id: "kim-jingyu", name: "김진규", nameEn: "Kim Jin-gyu", shortName: "김진규", group: "MF",
     primary: "DM", eligible: ["DM", "CB"], age: 28, club: "전북 현대", caps: 18, foot: "R",
     marketValueM: 3, confidence: "medium", sourceNote: SRC_KR,
     attributes: { buildUp: 68, progression: 54, finishing: 40, pressWork: 78, defending: 76, versatility: 62, ntFit: 60, form: 66 },
@@ -180,7 +190,7 @@ export const squad: Player[] = [
     note: "차단·활동량형 수비형 미드필더",
   },
   {
-    id: "lee-jaesung", name: "이재성", nameEn: "Lee Jae-sung", group: "MF",
+    id: "lee-jaesung", name: "이재성", nameEn: "Lee Jae-sung", shortName: "이재성", group: "MF",
     primary: "AM", eligible: ["AM", "CM", "LM"], age: 33, club: "마인츠 05", caps: 80, foot: "R",
     marketValueM: 6, confidence: "medium", sourceNote: "분데스 + 대표팀 부주장 역할 큐레이션",
     attributes: { buildUp: 78, progression: 80, finishing: 64, pressWork: 82, defending: 60, versatility: 74, ntFit: 84, form: 80 },
@@ -196,9 +206,14 @@ export const squad: Player[] = [
       thrive: "공수 연결과 압박 가담 역할에서 영향력이 극대화됩니다.",
       die: "순수 수비형 또는 순수 점유 역할로 묶이면 색이 옅어집니다.",
     },
+    roles: {
+      optimal: "공수 연결과 압박 가담 역할에서 박스를 드나들며 팀의 윤활유가 된다. 영향력이 극대화된다.",
+      limited: "중원에 서지만 역할이 한쪽(수비 또는 점유)에 묶여, 공수를 잇는 폭이 좁아진다.",
+      misused: "순수 수비형으로 묶이거나 구상에서 밀려, 박스 침투와 연결이라는 색이 옅어진다.",
+    },
   },
   {
-    id: "lee-donggyeong", name: "이동경", nameEn: "Lee Dong-gyeong", group: "MF",
+    id: "lee-donggyeong", name: "이동경", nameEn: "Lee Dong-gyeong", shortName: "이동경", group: "MF",
     primary: "CM", eligible: ["CM", "AM", "LM"], age: 28, club: "울산 HD", caps: 22, foot: "R",
     marketValueM: 4, confidence: "medium", sourceNote: SRC_KR,
     attributes: { buildUp: 76, progression: 76, finishing: 62, pressWork: 70, defending: 54, versatility: 66, ntFit: 66, form: 70 },
@@ -209,7 +224,7 @@ export const squad: Player[] = [
 
   // ── Attacking midfield / wingers ──────────────────────────────────────────
   {
-    id: "lee-kangin", name: "이강인", nameEn: "Lee Kang-in", group: "MF",
+    id: "lee-kangin", name: "이강인", nameEn: "Lee Kang-in", shortName: "이강인", group: "MF",
     primary: "AM", eligible: ["AM", "CM", "RW", "RM"], age: 25, club: "파리 생제르맹", caps: 40, foot: "R",
     marketValueM: 40, confidence: "medium", sourceNote: "리그앙/UCL + 대표팀 역할 큐레이션",
     attributes: { buildUp: 82, progression: 88, finishing: 68, pressWork: 56, defending: 44, versatility: 64, ntFit: 78, form: 82 },
@@ -219,15 +234,21 @@ export const squad: Player[] = [
     core: {
       bestRoles: ["AM", "RW"],
       conditions: [
-        { axis: "possession", prefer: "high", target: 70, weight: 0.9, label: "점유로 볼 터치 보장" },
-        { axis: "pressHeight", prefer: "low", target: 78, weight: 0.6, label: "수비 부담 과하지 않게" },
+        { axis: "possession", prefer: "high", target: 72, weight: 0.9, label: "점유로 볼 터치 보장" },
+        { axis: "buildFromBack", prefer: "high", target: 68, weight: 0.7, label: "공이 흘러 전방까지 도달" },
+        { axis: "pressHeight", prefer: "low", target: 76, weight: 0.6, label: "수비 부담 과하지 않게" },
       ],
       thrive: "하프스페이스·10번에서 볼 터치가 보장되고 점유율이 높을 때 살아납니다.",
       die: "고강도 압박과 빠른 템포로 수비 부담이 커지면 주전 경쟁에서 밀립니다.",
     },
+    roles: {
+      optimal: "하프스페이스·10번에서 볼 터치를 보장받아 탈압박과 키패스가 살아난다. 박스 근처에서 창의성이 폭발하며 한국 공격의 지휘자가 된다.",
+      limited: "오른쪽·중앙에 배치돼 볼은 잡지만, 후방에서 전방으로 공이 매끄럽게 흐르지 않아 영향력이 박스 근처까지 이어지지 못한다.",
+      misused: "공이 흐르지 않아 이강인이 낮게 내려와 빌드업 보조를 하며 볼만 돌린다. 정작 가장 위협적인 하프스페이스를 밟지 못해 창의성이 박스 근처에서 사라진다.",
+    },
   },
   {
-    id: "bae-junho", name: "배준호", nameEn: "Bae Jun-ho", group: "MF",
+    id: "bae-junho", name: "배준호", nameEn: "Bae Jun-ho", shortName: "배준호", group: "MF",
     primary: "AM", eligible: ["AM", "RW", "LW"], age: 22, club: "스토크 시티", caps: 12, foot: "R",
     marketValueM: 9, confidence: "low", sourceNote: SRC_TM,
     attributes: { buildUp: 70, progression: 82, finishing: 60, pressWork: 68, defending: 46, versatility: 72, ntFit: 64, form: 74 },
@@ -236,7 +257,7 @@ export const squad: Player[] = [
     note: "드리블 돌파형 영건",
   },
   {
-    id: "eom-jiseong", name: "엄지성", nameEn: "Eom Ji-sung", group: "MF",
+    id: "eom-jiseong", name: "엄지성", nameEn: "Eom Ji-sung", shortName: "엄지성", group: "MF",
     primary: "RW", eligible: ["RW", "LW", "RM"], age: 23, club: "스완지 시티", caps: 8, foot: "L",
     marketValueM: 6, confidence: "low", sourceNote: SRC_TM,
     attributes: { buildUp: 62, progression: 80, finishing: 58, pressWork: 72, defending: 46, versatility: 66, ntFit: 60, form: 70 },
@@ -245,7 +266,7 @@ export const squad: Player[] = [
     note: "측면 폭발력·침투",
   },
   {
-    id: "yang-hyunjun", name: "양현준", nameEn: "Yang Hyun-jun", group: "MF",
+    id: "yang-hyunjun", name: "양현준", nameEn: "Yang Hyun-jun", shortName: "양현준", group: "MF",
     primary: "LW", eligible: ["LW", "RW"], age: 23, club: "셀틱", caps: 14, foot: "R",
     marketValueM: 6, confidence: "low", sourceNote: SRC_TM,
     attributes: { buildUp: 60, progression: 82, finishing: 58, pressWork: 74, defending: 46, versatility: 62, ntFit: 62, form: 72 },
@@ -256,7 +277,7 @@ export const squad: Player[] = [
 
   // ── Forwards ──────────────────────────────────────────────────────────────
   {
-    id: "son-heungmin", name: "손흥민", nameEn: "Son Heung-min", group: "FW",
+    id: "son-heungmin", name: "손흥민", nameEn: "Son Heung-min", shortName: "손흥민", group: "FW",
     primary: "LW", eligible: ["LW", "ST", "SS", "RW"], age: 33, club: "LAFC", caps: 144, foot: "B", captain: true,
     marketValueM: 10, confidence: "medium", sourceNote: "EPL/MLS 통산 + 대표팀 에이스 역할 큐레이션",
     attributes: { buildUp: 72, progression: 84, finishing: 88, pressWork: 70, defending: 44, versatility: 78, ntFit: 90, form: 82 },
@@ -272,9 +293,14 @@ export const squad: Player[] = [
       thrive: "역습·전환 공간이 열리고 중앙/세컨드 스트라이커로 자유를 받을 때 폭발합니다.",
       die: "왼쪽에 고립돼 내려서서 빌드업만 강요받으면 효율이 급감합니다.",
     },
+    roles: {
+      optimal: "역습 공간이 열리는 시스템에서 중앙·세컨톱으로 자유를 받아 양발 마무리가 폭발한다. 가장 위협적인 손흥민이 된다.",
+      limited: "측면에 배치되지만 전환 속도가 충분치 않아, 달릴 공간보다 발밑 싸움이 늘며 결정 기회가 줄어든다.",
+      misused: "느린 점유 속 왼쪽에 고립돼 내려와 받는 일이 많아진다. 공간이 사라지니 폭발력이 묻히고 에이스의 장점이 죽는다.",
+    },
   },
   {
-    id: "hwang-heechan", name: "황희찬", nameEn: "Hwang Hee-chan", group: "FW",
+    id: "hwang-heechan", name: "황희찬", nameEn: "Hwang Hee-chan", shortName: "황희찬", group: "FW",
     primary: "LW", eligible: ["LW", "ST", "RW", "SS"], age: 30, club: "울버햄튼", caps: 60, foot: "R",
     marketValueM: 14, confidence: "medium", sourceNote: "EPL + 대표팀 역할 큐레이션",
     attributes: { buildUp: 62, progression: 80, finishing: 72, pressWork: 86, defending: 50, versatility: 74, ntFit: 78, form: 70 },
@@ -290,9 +316,14 @@ export const squad: Player[] = [
       thrive: "전방 압박과 직선 침투 역할이 명확할 때 강력한 무기가 됩니다.",
       die: "점유 속 좁은 공간 연계만 요구받으면 비효율적입니다.",
     },
+    roles: {
+      optimal: "전방 압박과 직선 침투 역할이 명확해 배후를 끊임없이 노린다. 역습의 첨병으로 폭발한다.",
+      limited: "측면에 서지만 압박 트리거가 약해, 활동량은 많아도 위협적인 침투 빈도가 줄어든다.",
+      misused: "점유 속 좁은 공간에서 연계만 강요받아, 달릴 공간이 사라지며 직선 돌파의 장점이 죽는다.",
+    },
   },
   {
-    id: "oh-hyeongyu", name: "오현규", nameEn: "Oh Hyeon-gyu", group: "FW",
+    id: "oh-hyeongyu", name: "오현규", nameEn: "Oh Hyeon-gyu", shortName: "오현규", group: "FW",
     primary: "ST", eligible: ["ST"], age: 24, club: "베식타시", caps: 22, foot: "R",
     marketValueM: 10, confidence: "medium", sourceNote: SRC_TM,
     attributes: { buildUp: 56, progression: 72, finishing: 76, pressWork: 82, defending: 40, versatility: 50, ntFit: 70, form: 74 },
@@ -301,7 +332,7 @@ export const squad: Player[] = [
     note: "활동량·배후 침투형 9번",
   },
   {
-    id: "cho-guesung", name: "조규성", nameEn: "Cho Gue-sung", group: "FW",
+    id: "cho-guesung", name: "조규성", nameEn: "Cho Gue-sung", shortName: "조규성", group: "FW",
     primary: "ST", eligible: ["ST"], age: 27, club: "미트윌란", caps: 30, foot: "R",
     marketValueM: 8, confidence: "medium", sourceNote: SRC_TM,
     attributes: { buildUp: 58, progression: 56, finishing: 76, pressWork: 70, defending: 60, versatility: 50, ntFit: 70, form: 66 },
@@ -310,7 +341,7 @@ export const squad: Player[] = [
     note: "장신 타깃맨, 제공권·연계",
   },
   {
-    id: "lee-kihyuk", name: "이기혁", nameEn: "Lee Ki-hyuk", group: "FW",
+    id: "lee-kihyuk", name: "이기혁", nameEn: "Lee Ki-hyuk", shortName: "이기혁", group: "FW",
     primary: "RW", eligible: ["RW", "LW", "AM"], age: 21, club: "강원 FC", caps: 3, foot: "R",
     marketValueM: 2, confidence: "low", sourceNote: SRC_KR,
     attributes: { buildUp: 60, progression: 78, finishing: 56, pressWork: 72, defending: 44, versatility: 64, ntFit: 56, form: 68 },

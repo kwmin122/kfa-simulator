@@ -45,10 +45,18 @@ export interface CoreProfile {
   die: string;    // KR — when they get killed
 }
 
+/** Role scenarios for key players — hand-written, engine-selected (no template). */
+export interface RoleScenarios {
+  optimal: string;  // 장점이 완전히 살아나는 배치
+  limited: string;  // 뛰지만 영향이 제한되는 배치
+  misused: string;  // 잘못된 자리/역할로 장점이 죽음 (벤치 아님)
+}
+
 export interface Player {
   id: string;
   name: string;
   nameEn: string;
+  shortName: string;   // 피치 라벨용 (옌스 카스트로프 → "옌스")
   number?: number;
   group: PositionGroup;
   primary: Position;
@@ -66,6 +74,8 @@ export interface Player {
   weaknesses?: string[];
   note?: string;
   core?: CoreProfile;
+  /** Key-player role scenarios (손·이·김·황인범·황희찬·이재성). Engine picks one. */
+  roles?: RoleScenarios;
   /** Evidence layer: how confident the ratings are + what informed them. */
   confidence?: Confidence;
   sourceNote?: string; // KR — e.g. "FBref 24/25 + 국대 역할 큐레이션"
@@ -180,10 +190,14 @@ export interface FitAxes {
 }
 
 export type VerdictLevel = "thrives" | "neutral" | "sacrificed" | "benched";
+/** Key players are never "benched" — they're graded on role quality. */
+export type RoleQuality = "optimal" | "limited" | "misused";
 
 export interface PlayerVerdict {
   playerId: string;
   level: VerdictLevel;
+  /** For key players: role-quality grade (벤치 아님). undefined for depth players. */
+  roleQuality?: RoleQuality;
   buff: number;     // signed −15..+15 (absolute role suitability vs their ceiling)
   reason: string;
   inXi: boolean;

@@ -22,6 +22,19 @@ export const SA_MATCH = {
   ],
 };
 
+/** 남아공전 실제 선발 라인업 (3-4-3). 홍명보 baseline은 bestXI가 아니라 이 고정 XI를
+ *  쓴다 — 손흥민·이재성을 벤치에 둔 '선택 실패'가 분석에 그대로 드러나야 하기 때문.
+ *  순서는 formationSlots("3-4-3")와 일치: GK,CB,CB,CB,RWB,CM,CM,LWB,RW,ST,LW. */
+export const HONG_SA_FORMATION = "3-4-3";
+export const HONG_SA_XI: string[] = [
+  "kim-seunggyu",
+  "lee-hanbeom", "kim-minjae", "lee-kihyuk",
+  "seol-youngwoo", "hwang-inbeom", "paik-seungho", "lee-taeseok",
+  "lee-kangin", "oh-hyeongyu", "hwang-heechan",
+];
+/** 홍명보가 벤치에 둔 핵심 자원 (선택 실패로 분석에 명시). */
+export const HONG_BENCHED = ["son-heungmin", "lee-jaesung"];
+
 export const saTags: SaTag[] = [
   {
     key: "finalThirdCreativity",
