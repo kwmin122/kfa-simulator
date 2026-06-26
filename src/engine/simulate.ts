@@ -35,13 +35,18 @@ function buildBaselineDelta(coach: Coach, style: TeamStyle, baseStyle: TeamStyle
 
 /** Headline: lead with the coach's DISTINCT identity (hook), then the dynamic
  *  궁합. Each coach reads differently. Never lead with risk. */
-/** "남아공전이 이 감독이었다면" 가상 스코어. 홍명보는 실제 0-1을 재현. 절대 궁합(fit)에
- *  비례 — 평범한 감독은 비기고, 잘 맞는 감독만 크게 이긴다. 모델 추정, 0~4 / 0~3 캡. */
-function whatIfScore(predictedXg: { for: number; against: number }, fit: number, isBaseline: boolean): { kr: number; opp: number } {
+/** "남아공전이 이 감독이었다면" 가상 스코어. 홍명보는 실제 0-1을 재현.
+ *  - 득점(kr): 궁합 우위(edge) + 그 감독의 공격 위협도(공격·전환·압박) → 잘 맞는 공격형은 대승.
+ *  - 실점(opp): 라인 리스크(하이프레스+허술한 세틀드 수비)와 낮은 궁합에 비례 → 게겐프레싱은
+ *    이겨도 실점하는 난타전(4-2), 안정형 로우블록은 클린시트, 마찰 큰 궁합은 뒷문이 열린다.
+ *  감독 색깔이 스코어로 드러나도록 설계. 모델 추정. */
+function whatIfScore(coach: Coach, style: TeamStyle, fit: number, isBaseline: boolean): { kr: number; opp: number } {
   if (isBaseline) return { kr: 0, opp: 1 }; // 실제 결과
-  const edge = (fit - 56) / 14; // fit 56→0(고전), 70→+1, 84→+2 (남아공은 이겨야 할 상대)
-  const kr = Math.min(4, Math.max(0, Math.round(0.6 + edge * 0.8 + (predictedXg.for - 1.0) * 1.2)));
-  const opp = Math.min(3, Math.max(0, Math.round(1.2 - edge * 0.5 - (1.1 - predictedXg.against))));
+  const edge = (fit - 58) / 9; // fit 58→0, 67→+1, 76→+2, 84→+2.9
+  const threat = (style.attack + style.transition + style.press) / 3; // 체감 공격력
+  const risk = lineRisk(coach, style); // 0~100, 하이라인 노출도
+  const kr = Math.min(5, Math.max(0, Math.round(0.6 + edge * 0.9 + (threat - 58) / 14)));
+  const opp = Math.min(4, Math.max(0, Math.round(0.5 + (risk - 44) / 15 + (72 - fit) / 18)));
   return { kr, opp };
 }
 
@@ -101,7 +106,7 @@ export function simulate(coach: Coach, squad: Player[], baseline: Coach): Simula
     strengths, weaknesses, keyVerdicts: verdicts,
     saResolution: saRes, saCounterfactual: cf,
     predictedXg, wcReach, wcScenarios, baselineDelta,
-    whatIf: whatIfScore(predictedXg, fit.fitScore, isBaseline),
+    whatIf: whatIfScore(coach, style, fit.fitScore, isBaseline),
     wcNarrative: wcNarrative(coach, fit.fitScore, style, wcScenarios, isBaseline),
     headline, explanation,
   };

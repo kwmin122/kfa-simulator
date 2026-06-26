@@ -8,17 +8,22 @@ import { fitTone } from "@/lib/format";
 
 interface Vote { change: boolean; anger: number; pick: string }
 const KEY = "kfa-vote-v1";
-const ANGER = ["", "😐 그냥 그럼", "😒 답답", "😠 화남", "🤬 분노", "🌋 폭발"];
+const ANGER = ["선택 안 함", "😐 그냥 그럼", "😒 답답", "😠 화남", "🤬 분노", "🌋 폭발"];
 
 /** 감독 교체 찬반 투표 + 픽한 감독 분석 표시 (MVP: localStorage, 전국 집계는 Fan Pulse DB 연결 후). */
 export default function VoteWidget({ coaches, baselineFit, simUrgency }: { coaches: CompareItem[]; baselineFit: number; simUrgency: number }) {
   const [vote, setVote] = useState<Vote | null>(null);
   const [change, setChange] = useState<boolean | null>(null);
-  const [anger, setAnger] = useState(4);
+  const [anger, setAnger] = useState(0);
   const [pick, setPick] = useState("");
 
   useEffect(() => {
-    try { const raw = localStorage.getItem(KEY); if (raw) setVote(JSON.parse(raw)); } catch {}
+    // 마운트 시 저장된 투표 복원. SSR 하이드레이션 불일치를 피하려면 effect에서 set 해야 함.
+    try {
+      const raw = localStorage.getItem(KEY);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      if (raw) setVote(JSON.parse(raw));
+    } catch {}
   }, []);
 
   const submit = () => {
@@ -37,7 +42,7 @@ export default function VoteWidget({ coaches, baselineFit, simUrgency }: { coach
           <div className="text-xs font-bold uppercase tracking-[0.18em] text-accent">투표 완료 — 고마워요</div>
           <p className="mt-2 text-base font-bold text-foreground">
             <span style={{ color: vote.change ? "var(--bad)" : "var(--muted)" }}>{vote.change ? "당장 교체" : "지켜보자"}</span>
-            {" · "}분노 <span className="text-bad">{vote.anger}/5</span>
+            {vote.anger > 0 && <>{" · "}분노 <span className="text-bad">{vote.anger}/5</span></>}
           </p>
           <div className="mt-1 text-[11px] text-muted">시뮬 교체 시급도 {simUrgency}% · 전국 집계는 Fan Pulse 정식 오픈 후</div>
         </div>
@@ -95,10 +100,10 @@ export default function VoteWidget({ coaches, baselineFit, simUrgency }: { coach
       </div>
 
       <div className="mt-4">
-        <div className="mb-1.5 flex justify-between text-xs text-muted"><span>분노 레벨</span><span>{ANGER[anger]}</span></div>
+        <div className="mb-1.5 flex justify-between text-xs text-muted"><span>분노 레벨 <span className="text-muted/60">(선택)</span></span><span>{ANGER[anger]}</span></div>
         <div className="flex gap-1.5">
           {[1, 2, 3, 4, 5].map((n) => (
-            <button key={n} onClick={() => setAnger(n)} className="h-9 flex-1 rounded-lg border text-sm font-bold transition-colors"
+            <button key={n} onClick={() => setAnger(anger === n ? 0 : n)} className="h-9 flex-1 rounded-lg border text-sm font-bold transition-colors"
               style={{ borderColor: n <= anger ? "var(--bad)" : "var(--line)", background: n <= anger ? "color-mix(in srgb, var(--bad) 14%, transparent)" : "transparent", color: n <= anger ? "var(--bad)" : "var(--muted)" }}>{n}</button>
           ))}
         </div>

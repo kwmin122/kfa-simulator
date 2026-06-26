@@ -1,13 +1,12 @@
 import Link from "next/link";
-import CompareHero, { type CompareItem } from "@/components/CompareHero";
-import RageGauge from "@/components/RageGauge";
+import type { Coach, SimulationResult } from "@/data/types";
+import SimulatorDeck from "@/components/SimulatorDeck";
 import VoteWidget from "@/components/VoteWidget";
-import CircularGallery from "@/components/CircularGallery";
-import RankingBoard from "@/components/RankingBoard";
+import type { CompareItem } from "@/components/CompareHero";
 import Reveal from "@/components/Reveal";
 import { squad } from "@/data/squad";
 import { requirementSupply } from "@/engine";
-import { allCandidates, candidatesByFit, getSim, ranking, baselineSim, baselineCoach } from "@/lib/sims";
+import { candidatesByFit, getSim, baselineSim, baselineCoach } from "@/lib/sims";
 import { fitTone, ROUND_LABEL, TIER_LABEL, ROLEQ_META } from "@/lib/format";
 
 const CORE = [
@@ -17,7 +16,19 @@ const CORE = [
 ];
 const RQ_SHORT: Record<string, string> = { optimal: "최적", limited: "제한", misused: "죽음" };
 
-const compareItems: CompareItem[] = candidatesByFit.map((c) => {
+// Profiled candidates only (real sims), sorted by fit — the deck picker & ranking.
+const profiledCandidates = candidatesByFit.filter((c) => getSim(c.id)?.fitScore);
+
+// Serializable data for the client deck.
+const deckOrder = profiledCandidates.map((c) => c.id);
+const deckSims: Record<string, SimulationResult> = {};
+const deckCoaches: Record<string, Coach> = {};
+for (const c of [...profiledCandidates, baselineCoach]) {
+  deckSims[c.id] = getSim(c.id)!;
+  deckCoaches[c.id] = c;
+}
+
+const compareItems: CompareItem[] = profiledCandidates.map((c) => {
   const sim = getSim(c.id)!;
   const pos = sim.baselineDelta.filter((d) => d.good && d.delta >= 4).slice(0, 3);
   const caveat = sim.baselineDelta.find((d) => !d.good && d.delta >= 6);
@@ -33,11 +44,6 @@ const compareItems: CompareItem[] = candidatesByFit.map((c) => {
   };
 });
 
-const galleryItems = allCandidates.map((c) => ({
-  id: c.id, name: c.name, tier: c.tier, formation: c.formation,
-  fit: getSim(c.id)?.fitScore ?? 0, dna: c.dna,
-}));
-
 const STRUCTURAL = (
   [
     { key: "ballPlayingCB", label: "후방 빌드업 CB" },
@@ -47,8 +53,7 @@ const STRUCTURAL = (
   ] as const
 ).map((r) => ({ ...r, supply: Math.round(requirementSupply(r.key, squad)) })).sort((a, b) => a.supply - b.supply);
 
-const top3 = candidatesByFit.slice(0, 3);
-const profiledCandidates = candidatesByFit.filter((c) => getSim(c.id)?.fitScore);
+const top3 = profiledCandidates.slice(0, 3);
 const aboveHong = profiledCandidates.filter((c) => (getSim(c.id)?.fitScore ?? 0) > baselineSim.fitScore).length;
 
 export default function Home() {
@@ -56,60 +61,29 @@ export default function Home() {
   const bestSim = getSim(best.id)!;
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-5">
-      {/* Hero (compact) */}
-      <section className="pb-6 pt-12 sm:pt-16">
-        <Reveal immediate>
-          <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-kr-red">
-            <span className="h-px w-8 bg-kr-red" /> KFA COACH SIMULATOR
+    <main className="mx-auto w-full max-w-5xl px-4 py-6 sm:px-5">
+      {/* 한눈에 시뮬레이터 덱 — 감독 고르면 결과로 슬라이드, 분석 진입부는 옆에서 슬라이드-인 */}
+      <Reveal immediate>
+        <SimulatorDeck sims={deckSims} coachMeta={deckCoaches} order={deckOrder} baselineId={baselineCoach.id} />
+      </Reveal>
+
+      {/* 전국 팬 투표 */}
+      <section id="vote" className="scroll-mt-20 pt-12">
+        <Reveal>
+          <h2 className="headline text-2xl sm:text-3xl">당신의 한 표</h2>
+          <p className="mt-2 text-sm text-muted">홍명보 감독, 교체해야 하나? — 픽한 감독의 분석도 함께 떠요.</p>
+        </Reveal>
+        <Reveal delay={0.06}>
+          <div className="mt-4 max-w-md">
+            <VoteWidget coaches={compareItems} baselineFit={baselineSim.fitScore} simUrgency={Math.round((aboveHong / profiledCandidates.length) * 100)} />
           </div>
         </Reveal>
-        <Reveal immediate delay={0.05}>
-          <h1 className="headline mt-3 text-[2rem] sm:text-6xl">만약, 이 감독이었다면</h1>
-        </Reveal>
-        <Reveal immediate delay={0.1}>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-muted">
-            남아공전 0–1 패 이후 — 후보 감독을 고르면 <span className="text-foreground">홍명보(3-4-3, 궁합 {baselineSim.fitScore}) 대비</span> 한국 축구가
-            어떻게 달라지는지, 손흥민·이강인·김민재가 사는지 죽는지 설명 가능한 점수 엔진으로 비교합니다.
-          </p>
-        </Reveal>
       </section>
 
-      {/* Rage gauge + 투표 — 교체 시급도 본 뒤 바로 한 표 */}
-      <Reveal immediate delay={0.12}>
-        <div className="mb-5 grid gap-4 lg:grid-cols-[1.3fr_1fr]">
-          <RageGauge baselineFit={baselineSim.fitScore} aboveCount={aboveHong} total={profiledCandidates.length} bestName={best.name} bestFit={bestSim.fitScore} />
-          <VoteWidget coaches={compareItems} baselineFit={baselineSim.fitScore} simUrgency={Math.round((aboveHong / profiledCandidates.length) * 100)} />
-        </div>
-      </Reveal>
-
-      {/* Comparison-first hero — the product's core */}
-      <Reveal immediate delay={0.16}>
-        <CompareHero items={compareItems} baseline={{ name: baselineCoach.name, formation: baselineSim.formation, fitScore: baselineSim.fitScore }} />
-      </Reveal>
-
-      {/* Ranking */}
-      <section id="ranking" className="scroll-mt-20 py-12">
+      {/* 앞으로 한국 국대를 어떻게? */}
+      <section id="way-forward" className="scroll-mt-20 border-t border-line pt-12">
         <Reveal>
-          <h2 className="headline text-3xl">스쿼드 궁합 랭킹</h2>
-          <p className="mt-2 text-sm text-muted">&ldquo;감독이 좋은가&rdquo;가 아니라 <span className="text-foreground">현 26인이 그 축구를 실제로 수행할 수 있나</span> — 4축 100점(현실성 제외).</p>
-        </Reveal>
-        <div className="mt-5"><RankingBoard rows={ranking} /></div>
-      </section>
-
-      {/* Demoted gallery */}
-      <section className="border-t border-line py-12">
-        <Reveal>
-          <h2 className="text-sm font-bold uppercase tracking-[0.2em] text-muted">감독 둘러보기</h2>
-          <p className="mb-6 mt-1 text-xs text-muted">카드를 넘겨 다른 감독으로 바로 이동</p>
-        </Reveal>
-        <CircularGallery items={galleryItems} />
-      </section>
-
-      {/* Way forward */}
-      <section id="way-forward" className="scroll-mt-20 border-t border-line py-12">
-        <Reveal>
-          <h2 className="headline text-3xl">앞으로 한국 국대를 어떻게?</h2>
+          <h2 className="headline text-2xl sm:text-3xl">앞으로 한국 국대를 어떻게?</h2>
           <p className="mt-2 text-sm text-muted">랭킹·궁합·문제 해결을 묶은 종합 제언 — 모델 추정</p>
         </Reveal>
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
@@ -156,6 +130,9 @@ export default function Home() {
             </div>
           </Reveal>
         </div>
+        <Reveal delay={0.12}>
+          <Link href="/methodology" className="mt-5 inline-flex text-xs font-bold text-accent transition-colors hover:text-foreground">방법론 · 출처 · 면책 →</Link>
+        </Reveal>
       </section>
     </main>
   );
