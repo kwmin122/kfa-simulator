@@ -66,6 +66,9 @@ export interface Player {
   weaknesses?: string[];
   note?: string;
   core?: CoreProfile;
+  /** Evidence layer: how confident the ratings are + what informed them. */
+  confidence?: Confidence;
+  sourceNote?: string; // KR — e.g. "FBref 24/25 + 국대 역할 큐레이션"
 }
 
 // ── Coach / tactical model ────────────────────────────────────────────────
@@ -91,14 +94,6 @@ export interface Intangibles {
   starManagement: number;     // 스타 선수 관리
 }
 
-/** Realism of actually landing the Korea job (axis 5). */
-export interface Realism {
-  koreaPlausibility: number; // 연봉·커리어상 한국행 가능성
-  available: number;         // 계약 여부 (무직 = 높음)
-  asiaNtXP: number;          // 아시아/국가대표 경험
-  squadControl: number;      // 선수단 장악력
-}
-
 export type RequirementKey =
   | "ballPlayingCB" | "paceWingers" | "holdingDM" | "boxToBoxCM"
   | "creativeAM" | "mobileStriker" | "targetStriker" | "overlappingFB"
@@ -110,12 +105,25 @@ export interface Requirement {
   label: string;
 }
 
+export type Confidence = "high" | "medium" | "low";
+
+/** Evidence layer — so the UI never shows an ungrounded number as high-confidence. */
+export interface Provenance {
+  currentJob: string;       // verified current role
+  availability: string;     // KR — can they realistically take the Korea job
+  contractUntil?: string;   // e.g. "2030"
+  sourceUrl: string;
+  lastCheckedAt: string;    // ISO date
+  confidence: Confidence;
+  note?: string;            // KR — extra context (e.g. the 2024 backstory)
+}
+
 export interface Coach {
   id: string;
   name: string;
   nameEn: string;
   tier: CoachTier;
-  status: string;       // verified current job (KR)
+  status: string;       // short current-job label (KR)
   rumor?: string;       // why Korean fans talk about them (KR)
   nationality: string;
   age?: number;
@@ -124,11 +132,14 @@ export interface Coach {
   axes: StyleAxes;
   requirements: Requirement[];
   intangibles: Intangibles;
-  realism: Realism;
   dna: string[];
   blurb: string;
   profiled: boolean;
   sources: string[];
+  provenance: Provenance;
+  /** Meme/entertainment entry — INCLUDED in the default ranking, shown with a
+   *  "재미용" badge and filterable. (Not excluded.) */
+  meme?: boolean;
 }
 
 // ── South Africa match diagnosis ──────────────────────────────────────────
@@ -160,13 +171,12 @@ export interface XiSlot {
   slotFit: number;
 }
 
-/** The five squad-fit axes (each on its own max). */
-export interface FiveAxes {
-  coreImpact: number;     // 0–30 핵심 선수 버프/너프
-  tacticalExec: number;   // 0–25 전술 수행 가능성
-  weaknessFix: number;    // 0–20 약점 보완도
-  tournamentFit: number;  // 0–15 월드컵 단기전 적합도
-  realism: number;        // 0–10 현실 리스크
+/** The four squad-fit axes summing to 100 (no realism — fit + Hong comparison only). */
+export interface FitAxes {
+  coreImpact: number;     // 0–33 핵심 선수 활용 (손·이·김 살리기)
+  tacticalExec: number;   // 0–28 전술 수행 가능성
+  weaknessFix: number;    // 0–22 남아공전 약점 보완도
+  tournamentFit: number;  // 0–17 월드컵 단기전 적합도
 }
 
 export type VerdictLevel = "thrives" | "neutral" | "sacrificed" | "benched";
@@ -201,13 +211,29 @@ export interface PredictedXg {
   against: number;
 }
 
+/** A team-style change vs the Hong baseline — the star of the result screen. */
+export interface StyleDelta {
+  key: keyof TeamStyle | "lineRisk";
+  label: string;       // KR, e.g. "전방 압박"
+  delta: number;       // signed change vs Hong
+  good: boolean;       // is an increase good? (lineRisk: increase = bad)
+}
+
+/** WC outcome as a scenario band, not a single asserted probability. */
+export interface WcScenarios {
+  best: WcRound;
+  average: WcRound;
+  worst: WcRound;
+  note: string; // KR caveat
+}
+
 export interface SimulationResult {
   coachId: string;
   squadVersion: string;
   formation: string;
   xi: XiSlot[];
-  fitScore: number;       // 0–100 = sum of FiveAxes
-  axes: FiveAxes;
+  fitScore: number;       // 0–100 = sum of FitAxes (4축, realism 제외)
+  axes: FitAxes;
   teamStyle: TeamStyle;   // for the "어떤 축구" radar
   strengths: string[];
   weaknesses: string[];
@@ -216,6 +242,9 @@ export interface SimulationResult {
   saCounterfactual: { summary: string; winShift: number };
   predictedXg: PredictedXg;
   wcReach: WcReach;
+  wcScenarios: WcScenarios;
+  baselineDelta: StyleDelta[];
+  headline: string;       // one-line conclusion
   explanation: string;
 }
 
@@ -235,6 +264,7 @@ export interface RankingRow {
   tier: CoachTier;
   fitScore: number;
   expected: WcRound;
-  realism: number;
+  confidence: Confidence;
+  meme: boolean;
   profiled: boolean;
 }

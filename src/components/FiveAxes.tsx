@@ -1,10 +1,10 @@
-import type { FiveAxes } from "@/data/types";
+import type { FitAxes } from "@/data/types";
 import { AXIS_LABEL, AXIS_MAX, fitTone } from "@/lib/format";
 
-const ORDER: (keyof FiveAxes)[] = ["coreImpact", "tacticalExec", "weaknessFix", "tournamentFit", "realism"];
+const ORDER: (keyof FitAxes)[] = ["coreImpact", "tacticalExec", "weaknessFix", "tournamentFit"];
 
-/** The 5-axis decomposition of the 적합도 score — explainability, not an oracle. */
-export default function FiveAxes({ axes }: { axes: FiveAxes }) {
+/** The 4-axis decomposition of the 궁합 score — explainability, not an oracle. */
+export default function FiveAxes({ axes }: { axes: FitAxes }) {
   return (
     <div className="space-y-3">
       {ORDER.map((k) => {

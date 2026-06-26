@@ -1,5 +1,5 @@
 import type {
-  Attributes, Coach, FiveAxes, Player, Position, RequirementKey,
+  Attributes, Coach, FitAxes, Player, Position, RequirementKey,
   StyleAxes, TeamStyle, XiSlot,
 } from "@/data/types";
 import { saTags } from "@/data/saMatch";
@@ -60,7 +60,7 @@ export function tacticalExec(coach: Coach, squad: Player[]): { score: number; br
   const wsum = breakdown.reduce((a, r) => a + r.weight, 0);
   const supplyAvg = wsum ? breakdown.reduce((a, r) => a + r.weight * r.supply, 0) / wsum : 0;
   const ambition = clamp01(wsum / 4.2); // ~5 strong requirements = full ambition
-  const score = (supplyAvg / 100) * (0.55 + 0.45 * ambition) * 25;
+  const score = (supplyAvg / 100) * (0.55 + 0.45 * ambition) * 28;
   return { score, breakdown };
 }
 
@@ -89,7 +89,7 @@ export function coreImpact(coach: Coach, squad: Player[], xiIds: Set<string>): n
     num += w * corePlayerScore(p, coach, xiIds.has(p.id));
     den += w;
   }
-  return (den ? num / den : 0) * 30;
+  return (den ? num / den : 0) * 33;
 }
 
 // ── AXIS 3 — weakness fix (0–20), ABSOLUTE ─────────────────────────────────
@@ -108,42 +108,33 @@ export function weaknessFixAxis(coach: Coach, squad: Player[]): { score: number;
     const fix = clamp01(0.82 * axesScore + 0.18 * reqScore);
     return { key: tag.key, fix };
   });
-  return { score: mean(perTag.map((t) => t.fix)) * 20, perTag };
+  return { score: mean(perTag.map((t) => t.fix)) * 22, perTag };
 }
 
-// ── AXIS 4 — tournament fit (0–15) ─────────────────────────────────────────
+// ── AXIS 4 — tournament fit (0–17) ─────────────────────────────────────────
 export function tournamentFit(coach: Coach): number {
   const i = coach.intangibles;
   const raw =
     (100 - i.complexity) * 0.2 + i.planB * 0.2 + i.tournamentXP * 0.25 +
     i.defensiveStability * 0.15 + i.starManagement * 0.2;
-  return (raw / 100) * 15;
+  return (raw / 100) * 17;
 }
 
-// ── AXIS 5 — realism (0–10) ────────────────────────────────────────────────
-export function realismAxis(coach: Coach): number {
-  const r = coach.realism;
-  const raw = r.koreaPlausibility * 0.4 + r.available * 0.2 + r.asiaNtXP * 0.2 + r.squadControl * 0.2;
-  return (raw / 100) * 10;
-}
+// ── Combined 4-axis fit (realism removed; sum = 100) ───────────────────────
+export interface FitResult { fitScore: number; axes: FitAxes; breakdown: ReqBreakdown[]; weaknessPerTag: { key: string; fix: number }[] }
 
-// ── Combined 5-axis fit ────────────────────────────────────────────────────
-export interface FitResult { fitScore: number; axes: FiveAxes; breakdown: ReqBreakdown[]; weaknessPerTag: { key: string; fix: number }[] }
-
-export function fiveAxisFit(coach: Coach, squad: Player[], xiIds: Set<string>): FitResult {
+export function computeFit(coach: Coach, squad: Player[], xiIds: Set<string>): FitResult {
   const exec = tacticalExec(coach, squad);
   const core = coreImpact(coach, squad, xiIds);
   const weak = weaknessFixAxis(coach, squad);
   const tourn = tournamentFit(coach);
-  const real = realismAxis(coach);
-  const axes: FiveAxes = {
+  const axes: FitAxes = {
     coreImpact: Math.round(core),
     tacticalExec: Math.round(exec.score),
     weaknessFix: Math.round(weak.score),
     tournamentFit: Math.round(tourn),
-    realism: Math.round(real),
   };
-  const fitScore = clamp(axes.coreImpact + axes.tacticalExec + axes.weaknessFix + axes.tournamentFit + axes.realism);
+  const fitScore = clamp(axes.coreImpact + axes.tacticalExec + axes.weaknessFix + axes.tournamentFit);
   return { fitScore: Math.round(fitScore), axes, breakdown: exec.breakdown, weaknessPerTag: weak.perTag };
 }
 

@@ -1,4 +1,4 @@
-import type { CoachTier, FiveAxes, TeamStyle, VerdictLevel, WcRound } from "@/data/types";
+import type { CoachTier, Confidence, FitAxes, TeamStyle, VerdictLevel, WcRound } from "@/data/types";
 
 export const ROUND_LABEL: Record<WcRound, string> = {
   group: "조별 탈락",
@@ -26,15 +26,20 @@ export const STYLE_LABEL: Record<keyof TeamStyle, string> = {
   control: "장악",
 };
 
-export const AXIS_LABEL: Record<keyof FiveAxes, string> = {
-  coreImpact: "핵심 선수",
+export const AXIS_LABEL: Record<keyof FitAxes, string> = {
+  coreImpact: "핵심 선수 활용",
   tacticalExec: "전술 수행",
-  weaknessFix: "약점 보완",
-  tournamentFit: "단기전",
-  realism: "현실성",
+  weaknessFix: "남아공 약점 보완",
+  tournamentFit: "단기전 적합",
 };
-export const AXIS_MAX: Record<keyof FiveAxes, number> = {
-  coreImpact: 30, tacticalExec: 25, weaknessFix: 20, tournamentFit: 15, realism: 10,
+export const AXIS_MAX: Record<keyof FitAxes, number> = {
+  coreImpact: 33, tacticalExec: 28, weaknessFix: 22, tournamentFit: 17,
+};
+
+export const CONFIDENCE_META: Record<Confidence, { label: string; color: string }> = {
+  high: { label: "근거 충실", color: "var(--good)" },
+  medium: { label: "보도 기반", color: "var(--warn)" },
+  low: { label: "추정·낮음", color: "var(--bad)" },
 };
 
 export const VERDICT_META: Record<VerdictLevel, { label: string; color: string; arrow: string }> = {

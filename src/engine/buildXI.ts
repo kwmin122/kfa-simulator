@@ -63,16 +63,20 @@ export function buildXI(coach: Coach, squad: Player[], formationName?: string): 
  * Adds realism (Xabi reaches for 3-4-2-1 to fit a creator) and discrimination.
  */
 export function bestXI(coach: Coach, squad: Player[]): XiResult {
-  const options = Array.from(new Set([coach.formation, ...(coach.altFormations ?? [])]));
-  let best: XiResult | null = null;
-  let bestSum = -1;
-  for (const f of options) {
+  const primary = buildXI(coach, squad, coach.formation);
+  const primarySum = primary.xi.reduce((a, s) => a + s.slotFit, 0);
+  let best = primary;
+  let bestSum = primarySum;
+  // An alternate formation is only adopted if it's CLEARLY better for this
+  // squad (>4%), so each coach keeps their identity shape by default but the
+  // declared altFormations genuinely matter when the personnel call for it.
+  for (const f of coach.altFormations ?? []) {
     const r = buildXI(coach, squad, f);
     const sum = r.xi.reduce((a, s) => a + s.slotFit, 0);
-    if (sum > bestSum) {
+    if (sum > primarySum * 1.04 && sum > bestSum) {
       bestSum = sum;
       best = r;
     }
   }
-  return best ?? buildXI(coach, squad);
+  return best;
 }

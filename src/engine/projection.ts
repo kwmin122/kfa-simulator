@@ -43,6 +43,27 @@ export function project(fit: number, sub: TeamStyle): Projection {
   };
 }
 
+const ORDER: WcRound[] = ["group", "round32", "round16", "quarter", "semi", "final"];
+
+/** Express the projection as best/average/worst scenarios, not one asserted %. */
+export function scenarios(wc: WcReach): import("@/data/types").WcScenarios {
+  const reachProb = (r: WcRound) => ORDER.slice(ORDER.indexOf(r)).reduce((a, k) => a + wc.probs[k], 0);
+  // best = furthest round still ≥12% likely to reach; worst = earliest exit ≥20%
+  let best: WcRound = "group";
+  for (const r of ORDER) if (reachProb(r) >= 0.12) best = r;
+  let worst: WcRound = "final";
+  for (let i = 0; i < ORDER.length; i++) {
+    if (wc.probs[ORDER[i]] >= 0.2) { worst = ORDER[i]; break; }
+    if (i === ORDER.length - 1) worst = wc.expected;
+  }
+  return {
+    best,
+    average: wc.expected,
+    worst,
+    note: "최고/평균/최악 시나리오 — 단정 예측이 아닌 모델 추정 범위입니다.",
+  };
+}
+
 export const ROUND_LABEL: Record<WcRound, string> = {
   group: "조별리그 탈락",
   round32: "32강",

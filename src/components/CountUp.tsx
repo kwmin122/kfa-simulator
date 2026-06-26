@@ -21,8 +21,8 @@ export default function CountUp({ to, duration = 1100, decimals = 0, suffix = ""
     if (!el) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
-      setVal(to);
-      return;
+      const id = requestAnimationFrame(() => setVal(to));
+      return () => cancelAnimationFrame(id);
     }
     const io = new IntersectionObserver(
       (entries) => {

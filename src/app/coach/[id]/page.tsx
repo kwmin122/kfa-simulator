@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { squad } from "@/data/squad";
-import { buildXI, fiveAxisFit } from "@/engine";
+import { buildXI, computeFit } from "@/engine";
 import { allCoaches, getCoach, getSim, baselineCoach, baselineSim } from "@/lib/sims";
 import { TIER_LABEL, fitTone, ROUND_LABEL } from "@/lib/format";
 import type { StyleAxes } from "@/data/types";
@@ -44,7 +44,7 @@ export default async function CoachPage({ params }: { params: Promise<{ id: stri
 
   const isBaseline = coach.id === baselineCoach.id;
   const xi = buildXI(coach, squad);
-  const fit = fiveAxisFit(coach, squad, new Set(xi.xi.map((s) => s.player.id)));
+  const fit = computeFit(coach, squad, new Set(xi.xi.map((s) => s.player.id)));
   const tone = fitTone(sim.fitScore);
   const fitDelta = sim.fitScore - baselineSim.fitScore;
 
@@ -81,9 +81,9 @@ export default async function CoachPage({ params }: { params: Promise<{ id: stri
       {/* 5-axis + pitch */}
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
         <Reveal>
-          <Card title="적합도 5축 분해 (왜 이 점수인가)">
+          <Card title="궁합 4축 분해 (왜 이 점수인가)">
             <FiveAxes axes={sim.axes} />
-            <p className="mt-4 text-[11px] text-muted">핵심 선수 30 · 전술 수행 25 · 약점 보완 20 · 단기전 15 · 현실성 10 — 모델 추정</p>
+            <p className="mt-4 text-[11px] text-muted">핵심 선수 33 · 전술 수행 28 · 남아공 약점 보완 22 · 단기전 17 = 100 (현실성 제외) — 모델 추정</p>
           </Card>
         </Reveal>
         <Reveal delay={0.05}>
