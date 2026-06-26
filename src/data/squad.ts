@@ -163,12 +163,12 @@ export const squad: Player[] = [
   },
   {
     id: "jens-castrop", name: "옌스 카스트로프", nameEn: "Jens Castrop", group: "MF",
-    primary: "DM", eligible: ["DM", "CM"], age: 22, club: "1. FC 뉘른베르크", caps: 4, foot: "R",
-    marketValueM: 6, confidence: "low", sourceNote: "분데스 2부 + 귀화 직후 폼 기반 추정",
-    attributes: { buildUp: 72, progression: 64, finishing: 46, pressWork: 88, defending: 72, versatility: 64, ntFit: 62, form: 78 },
-    strengths: ["폭발적 압박·활동량", "볼 탈취"],
-    weaknesses: ["대표팀 호흡 적응 중", "빌드업 정교함 발전 중"],
-    note: "독일 출생 귀화 미드필더, 에너지형 6/8번",
+    primary: "DM", eligible: ["DM", "CM"], age: 22, club: "보루시아 묀헨글라드바흐", caps: 4, foot: "R",
+    marketValueM: 8, confidence: "medium", sourceNote: "분데스리가(묀헨글라드바흐) + 독일 연령별 대표 경력 기반 추정",
+    attributes: { buildUp: 73, progression: 70, finishing: 50, pressWork: 90, defending: 75, versatility: 66, ntFit: 66, form: 82 },
+    strengths: ["폭발적 압박·활동량(스쿼드 최고)", "볼 탈취·전진 운반", "박스투박스 에너지"],
+    weaknesses: ["대표팀 호흡 적응 중", "탈압박 침착성 발전 중"],
+    note: "독일 출생 귀화 박스투박스, 게겐프레스 시스템의 엔진",
   },
   {
     id: "kim-jingyu", name: "김진규", nameEn: "Kim Jin-gyu", group: "MF",

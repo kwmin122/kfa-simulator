@@ -13,6 +13,7 @@ export type FormationName =
   | "4-3-3"
   | "4-2-3-1"
   | "4-2-2-2"
+  | "4-2-4"
   | "4-4-2"
   | "3-4-3"
   | "3-4-2-1"
@@ -58,6 +59,19 @@ const F: Record<FormationName, SlotSpec[]> = {
     { role: "AM", x: 28, y: 64 },
     { role: "ST", x: 60, y: 84 },
     { role: "ST", x: 40, y: 84 },
+  ],
+  "4-2-4": [
+    { role: "GK", x: 50, y: 6 },
+    { role: "RB", x: 84, y: 24 },
+    { role: "CB", x: 62, y: 18 },
+    { role: "CB", x: 38, y: 18 },
+    { role: "LB", x: 16, y: 24 },
+    { role: "DM", x: 60, y: 44 },
+    { role: "CM", x: 40, y: 44 },
+    { role: "RW", x: 88, y: 74 },
+    { role: "ST", x: 62, y: 84 },
+    { role: "ST", x: 38, y: 84 },
+    { role: "LW", x: 12, y: 74 },
   ],
   "4-4-2": [
     { role: "GK", x: 50, y: 6 },
